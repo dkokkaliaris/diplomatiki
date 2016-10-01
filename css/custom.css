@@ -1,0 +1,104 @@
+header {
+    background-color: #3D3D3D;
+    color: #FFF;
+    padding: 10px;
+    text-align: right;
+}
+
+body {
+    font-size: 14px;
+    color: #333;
+}
+
+.logo-container {
+    margin-bottom: 0px;
+    background-color: #025aa5;
+    border-color: transparent;
+    border-radius: 0px;
+}
+
+
+.logo {
+    width:280px;
+}
+
+.menu-section {
+    background-color: #3D3D3D;
+}
+
+.menu-top-active {
+    background-color: #C36464;
+}
+
+
+.menu-top-bar a {
+    color: #FFF;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 10px 10px 10px 10px;
+    text-transform: uppercase;
+}
+
+.card-container{
+    width: 350px;
+    padding: 40px 40px;
+}
+
+.card-container{
+    background-color: #fff;
+    margin: 0 auto 25px;
+    margin-top: 50px;
+}
+
+.form-signin {
+    margin-bottom: 10px;
+    z-index: 1;
+    position: relative;
+    font-size: 16px;
+}
+
+.profile-img-card {
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 10px;
+    display: block;
+    border-radius: 50%;
+}
+
+.profile-name-card {
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    margin: 10px 0 0;
+    min-height: 1em;
+}
+
+.forgot-password {
+    color: #0685FF;
+}
+
+/*.btn {
+    -moz-user-select: none;
+    cursor: default;
+    background-color: #0066CC;
+    padding: 0px;
+    font-weight: 700;
+    font-size: 14px;
+    height: 36px;
+    border-radius: 3px;
+    border: none;
+    transition: all 0.218s;
+    width: 100%;
+    display: block;
+    margin-bottom: 10px;
+    z-index: 1;
+    position: relative;
+    box-sizing: border-box;
+}*/
+input[type=checkbox], input[type=radio]{display: inline-block;width: auto;}
+.hidden_block{display: none;}
+.table-head{background-color: #3D3D3D;color: #fff;font-weight: 600;padding: 15px;margin-top: 15px;}
+#all_q{padding: 0;list-style-type: none;}
+#all_q li{padding: 15px;display: block;transition: 0.3s all linear;opacity: 1;}
+#all_q li.opacity-0{opacity: 0;}
+#submit-order{margin-top: 15px;}
