@@ -64,6 +64,10 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 <div class="card-container">
                     <a href="/questionnaire/anonymous_questionnaires.php">Ανώνυμη Αξιολόγηση</a>
                 </div>
+				
+				<div class="card-container">
+                    <a href="/questionnaire/anonymous_questionnaires.php">Αξιολόγηση με arduino</a>
+                </div>
 
             </div>
         </div>
