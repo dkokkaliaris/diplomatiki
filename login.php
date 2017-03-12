@@ -35,9 +35,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     <div class="col-md-12">
 
     </br>
+    <h3>Είσοδος στο Σύστημα Αξιολόγησης</h3>
 
-    <h3>Για να συνδεθείτε στο σύστημα, παρακαλούμε επιλέξτε έναν από τους παρακάτω διαθέσιμους τρόπους:
-    </h3>
+    </br>
+
+    <h4>Για να συνδεθείτε στο σύστημα αξιολόγησης εκπαιδευτικών προγραμμάτων (i-evaluation), παρακαλούμε επιλέξτε έναν από τους παρακάτω διαθέσιμους τρόπους, επιλέγοντας τον κατάλληλο υπερσύνδεσμο που εμφανίζεται στην παρακάτω λίστα:
+    </h4>
 
     </br>
     </br>
@@ -46,14 +49,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
       <div class="panel panel-default">
         <div class="panel-heading" role="tab" id="headingOne">
           <h4 class="panel-title">
-            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">1) Σύνδεση στο σύστημα με χρήση του ιδρυματικού κωδικού (Σύνδεση με SSO)
+            <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">1) Είσοδος στο σύστημα με χρήση του ιδρυματικού κωδικού (Σύνδεση με SSO)
             </a>
           </h4>
         </div>
     	
         <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
 
-        <div class="panel-body"> Για να συνδεθείτε στο σύστημα μέσω των ιδρυματικών κωδικών σας ως εγγεγραμμένος χρήστης, παρακαλούμε συμπληρώστε τα παρακάτω πεδία της φόρμας. Αυτός ο τρόπος σύνδεσης προτείνεται σε εγγεγραμμένους χρήστες όλων των επιπέδων (δηλαδή φοιτητές, καθηγητές, ΟΜ.Ε.Α. και διαχειριστές) που διαθέτουν ακαδημαϊκό λογαριασμό.
+        <div class="panel-body"> Για να συνδεθείτε στο σύστημα μέσω των ιδρυματικών κωδικών σας ως εγγεγραμμένος χρήστης, παρακαλούμε συμπληρώστε τα παρακάτω πεδία της φόρμας. Ο συγκεκριμένος τρόπος σύνδεσης προτείνεται σε εγγεγραμμένους χρήστες όλων των επιπέδων (δηλαδή φοιτητές, καθηγητές, ΟΜ.Ε.Α. και διαχειριστές) που διαθέτουν ακαδημαϊκό λογαριασμό.
         <p class="profile-name-card"></p>
 
         <form class="form-signin" action="" method="post">
@@ -80,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 <div class="panel panel-default">
   <div class="panel-heading" role="tab" id="headingTwo">
     <h4 class="panel-title">
-      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">2) Σύνδεση στο σύστημα με χρήση των στοιχείων του πληροφοριακού συστήματος Εργαστηρίου Ψηφιακών Συστημάτων και Αρχιτεκτονικής Υπολογιστών (arch.icte.uowm.gr)
+      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">2) Είσοδος στο σύστημα με χρήση των στοιχείων του πληροφοριακού συστήματος Εργαστηρίου Ψηφιακών Συστημάτων και Αρχιτεκτονικής Υπολογιστών (Σύνδεση μέσω του συστήματος arch.icte.uowm.gr)
       </a>
     </h4>
   </div>
@@ -114,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 <div class="panel panel-default">
   <div class="panel-heading" role="tab" id="headingThree">
     <h4 class="panel-title">
-      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">3) Σύνδεση στο σύστημα με χρήση ενός μοναδικού κωδικού Token
+      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">3) Είσοδος στο σύστημα με χρήση ενός μοναδικού κωδικού Token
       </a>
     </h4>
   </div>
@@ -122,6 +125,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
   <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
     <div class="panel-body"> Μέσω της καταχώρησης ενός μοναδικού κωδικού token, ένας χρήστης μπορεί να συνδεθεί στο σύστημα και να αξιολογήσει ένα και μοναδικό εκπαιδευτικό πρόγραμμα. Ο συγκεκριμένος τρόπος σύνδεσης προτείνεται σε μη εγγεγραμμένους χρήστες που έχουν παραλάβει έναν κωδικό token από τον υπεύθυνο του εκπαιδευτικού προγράμματος που παρακολούθησαν.
 
+      <p class="profile-name-card"></p>
       <form action="find_questionnaire_fromtoken.php" method="post">
         <div class="form-group">
           <input class="form-control" placeholder="Μοναδικός Κωδικός Token" name="token" type="text">
@@ -145,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
   </div>
 
   <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
-    <div class="panel-body">Για να μεταβείτε στην σελίδα ανώνυμης αξιολόγησης, παρακαλούμε πατήστε <a href="anonymous_questionnaires.php">εδώ.</a>
+    <div class="panel-body">Για να μεταβείτε στην σελίδα ανώνυμης αξιολόγησης, παρακαλούμε πατήστε <a href="anonymous_questionnaires.php">εδώ.</a> ΠΡΟΣΟΧΗ: Στην επόμενη σελίδα ενδέχεται να καταγραφεί η διεύθυνση IP του υπολογιστή που χρησιμοποιείτε για την πλοήγησή σας, καθώς μέσω μίας διεύθυνσης IP ένας χρήστης μπορεί να ολοκληρώσει μόνο μία αξιολόγηση σε χρονικό διάστημα 30 λεπτών.
     </div>
   </div>
 </div>
@@ -156,13 +160,13 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 <div class="panel panel-default">
   <div class="panel-heading" role="tab" id="headingFive">
     <h4 class="panel-title">
-      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">5) Σύνδεση στο σύστημα για αξιολόγηση με χρήση API
+      <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">5) Είσοδος στο σύστημα για αξιολόγηση με χρήση API
       </a>
     </h4>
   </div>
 
   <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
-    <div class="panel-body">Για να μεταβείτε στην σελίδα της αξιολόγησης με χρήση API, παρακαλούμε πατήστε <a href="anonymous_questionnaires.php">εδώ.</a>
+    <div class="panel-body">Για να μεταβείτε στην σελίδα αξιολόγησης με χρήση API, παρακαλούμε πατήστε <a href="anonymous_questionnaires.php">εδώ.</a>
     </div> 
   </div>
  </div>
