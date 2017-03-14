@@ -1,10 +1,6 @@
 <?php
 include_once "includes/init.php";
 get_header();
-if (!$_SESSION['userid']) {
-    header("Location: /questionnaire/login.php");
-    exit;
-}
 
 if (isset($_GET['action']) && sanitize($_GET['action']) == "delete") {
     $id = sanitize($_GET['id']);
@@ -64,6 +60,7 @@ $results = $stmt->fetchALL();
 
 ?>
 
+<br/>
 <div class="container">
     <div class="col-sm-3">
         <?php include "sidebar.php"; ?>
@@ -71,7 +68,7 @@ $results = $stmt->fetchALL();
     <div class="col-sm-9">
         <div class="row">
             <div class="col-sm-9">
-                <h1>Ερωτηματολόγια</h1>
+                <h3>Ερωτηματολόγια</h3>
             </div>
             <div class="col-sm-3">
                 <a class="btn btn-primary" href="add_questionnaire.php">Προσθήκη Νέου</a>
@@ -180,11 +177,9 @@ $results = $stmt->fetchALL();
                         else echo '-';
                         ?>
                     </td>
-                    <td><a href="edit_questionnaire.php?id=<?php echo $result->id; ?>" type="button"><span
-                                    class="fa fa-pencil" aria-hidden="true"></span></a>
-                        <a onclick='return confirm("Διαγραφή")'
-                           href='questionnaires.php?action=delete&id=<?php echo $result->id; ?>&'
-                           type="button"><span class="fa fa-trash-o" aria-hidden="true"></span></a></td>
+
+                    <td><a class="btn btn-xs btn-success" href="edit_questionnaire.php?id=<?php echo $result->id; ?>">Επεξεργασία</a> <a class="btn btn-xs btn-danger" href="questionnaires.php?action=delete&id=<?php echo $result->id; ?>">Διαγραφή</a></td>
+
                 </tr>
             <?php } ?>
             </tbody>

@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $params = array(':type' => $type, ':first_name' => $first_name, ':last_name' => $last_name, ':username' => $username, ':aem' => $aem, ':email' => $email, ':telephone' => $telephone, ':id' => $id);
     $stmt->execute($params);
 
-    header("Location: /questionnaire/users.php");
+    header("Location: users.php?a=1");
 }
 
 //Παίρνουμε όλους τους χρήστες
@@ -60,7 +60,7 @@ $user = $stmt->fetchObject();
                     <label for="telephone" class="form-control-label">Τηλέφωνο: </label>
                     <input type="text" class="form-control" id="telephone" name="telephone" value="<?php echo $user->telephone ?>"/>
 
-                    <label for="type" class="form-control-label">Τύπος χρήστη</label><br/>
+                    <label for="type" class="form-control-label">Τύπος Χρήστη:</label><br/>
                     <select name="type" id="type"
                             class="form-control type" style="width: auto;">
                         <option value="0" <?php if ($user->type == 0) echo 'selected' ?>>Φοιτητής</option>
@@ -72,7 +72,7 @@ $user = $stmt->fetchObject();
                     <br/><br/>
                     <div class="row">
                         <div class="col-sm-12">
-                            <button class="btn btn-primary " type="submit">Αποθήκευση Αλλαγών</button>
+                            <button class="btn btn-primary " type="submit">Αποθήκευση</button>
                         </div>
                     </div>
 

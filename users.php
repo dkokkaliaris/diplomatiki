@@ -4,9 +4,19 @@ get_header();
 ?>
 
 <?php
+if ($_GET['del'] && $_GET['del']>0) {
+    $sql="DELETE FROM dk_users WHERE id=".$_GET['del'];
+    $mysqli->query($sql);
+    echo "<div class='alert alert-success'>Η διαγραφή του χρήστη πραγματοποιήθηκε με επιτυχία.</div>";
+}
+
+if ($_GET['a'] && $_GET['a']>0) {
+    echo "<div class='alert alert-success'>Η αλλαγή των στοιχείων του χρήστη πραγματοποιήθηκε με επιτυχία.</div>";
+}
+
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $types = sanitize($_POST['types']);
-    // αλλάζουμε τον τύπου για τον κάθε χρήστη
+    // αλλάζουμε τον τύπο για τον κάθε χρήστη
     foreach ($types as $id => $type) {
         $stmt = $dbh->prepare('UPDATE dk_users SET type = :type where id = :id');
         $params = array(':type' => $type, ':id' => $id);
@@ -53,14 +63,18 @@ $targetpage = "users.php";    //your file name  (the name of this file)
 
 ?>
 
+<br/>
 <div class="container">
     <div class="col-sm-3">
         <?php include "sidebar.php"; ?>
     </div>
     <div class="col-sm-9">
         <div class="row">
-            <div class="col-sm-8">
-                <h2>Διαχείριση Χρηστών</h2>
+            <div class="col-sm-10">
+                <h3>Διαχείριση Χρηστών</h3>
+            </div>
+			<div class="col-sm-2">
+                <a class="btn btn-primary btn-sm" href="new-user.php">Νέος Χρήστης</a>
             </div>
         </div>
         <hr/>
@@ -104,6 +118,11 @@ $targetpage = "users.php";    //your file name  (the name of this file)
                             } else {
                                 echo "desc";
                             } ?>">Κινητό</a></th>
+                        <th><a href="users.php?sortby=type&amp;sorthow=<?php if ($sorthow == "desc") {
+                                echo "asc";
+                            } else {
+                                echo "desc";
+                            } ?>">Τύπος Χρήστη</a></th>
                         <th>Ενέργειες</th>
                     </tr>
                     <tr>
@@ -114,10 +133,12 @@ $targetpage = "users.php";    //your file name  (the name of this file)
                         <td><input type="text" class="form-control" placeholder="Email" name="email" id="email"/></td>
                         <td><input type="text" class="form-control" placeholder="Username" name="username" id="username"/></td>
                         <td><input type="text" class="form-control" placeholder="Κινητό" name="telephone" id="telephone"/></td>
+                        <td><input type="text" class="form-control" placeholder="Επίπεδο Χρήστη" name="type" id="type"/></td>
 
                         <td>
                             <button type="submit" class="btn btn-sm btn-primary">Αναζήτηση</button>
                         </td>
+
                     </tr>
                     </thead>
 
@@ -130,6 +151,7 @@ $targetpage = "users.php";    //your file name  (the name of this file)
                     $email = isset($_REQUEST['email']) ? $_REQUEST['email'] : '';
                     $username = isset($_REQUEST['username']) ? $_REQUEST['username'] : '';
                     $kinito = isset($_REQUEST['v']) ? $_REQUEST['telephone'] : '';
+                    $type = isset($_REQUEST['type']) ? $_REQUEST['type'] : '';
 
                     if (!empty($onoma)) {
                         $addtosql .= " AND first_name LIKE '%$onoma%'";
@@ -149,6 +171,9 @@ $targetpage = "users.php";    //your file name  (the name of this file)
                     if (!empty($kinito)) {
                         $addtosql .= " AND telephone LIKE '%$kinito%'";
                     }
+                    if (!empty($type)) {
+                        $addtosql .= " AND type LIKE '%$type%'";
+                    }
 
                     //Παίρνουμε όλους τους χρήστες
                     $stmt = $dbh->prepare("SELECT * FROM dk_users WHERE 1 $addtosql $sortby $sorthow LIMIT $start,$limit");
@@ -165,7 +190,9 @@ $targetpage = "users.php";    //your file name  (the name of this file)
                               <td>' . $user->email . '</td>
                               <td>' . $user->username . '</td>
                               <td>' . $user->telephone . '</td>
-                              <td><a class="btn btn-xs btn-success" href="/questionnaire/edit_user.php?id=' . $user->id . '">Επεξεργασία</a></td>
+                              <td>' . $user->type . '</td>
+                              <td><a class="btn btn-xs btn-success" href="edit_user.php?id=' . $user->id . '">Επεξεργασία</a> <a class="btn btn-xs btn-danger" href="users.php?del=' . $user->id . '">Διαγραφή</a></td>
+
                           </tr>';
                     }
 

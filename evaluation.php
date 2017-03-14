@@ -1,10 +1,6 @@
 <?php
 include_once "includes/init.php";
 get_header();
-if (!$_SESSION['userid']) {
-    header("Location: /questionnaire/login.php");
-    exit;
-}
 
 if (isset($_GET['action']) && sanitize($_GET['action']) == "delete") {
     $id = sanitize($_GET['id']);
@@ -61,6 +57,7 @@ $results = $stmt->fetchALL();
 
 ?>
 
+<br/>
 <div class="container">
     <div class="col-sm-3">
         <?php include "sidebar.php"; ?>
@@ -68,7 +65,7 @@ $results = $stmt->fetchALL();
     <div class="col-sm-9">
         <div class="row">
             <div class="col-sm-9">
-                <h1>Μαθήματα</h1>
+                <h3>Αξιολόγηση Μαθημάτων</h3>
             </div>
         </div>
         <table class="table table-striped">

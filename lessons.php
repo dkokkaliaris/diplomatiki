@@ -2,11 +2,6 @@
 include_once "includes/init.php";
 get_header();
 
-if (!$_SESSION['userid']) {
-    header("Location: /questionnaire/login.php");
-    exit;
-}
-
 // σε περίπτωση που θέλω να διαγράψω ένα μάθημα, παίρνω από το URL
 // το action και το ID του και τρέχω το query.
 if (isset($_GET['action']) && sanitize($_GET['action']) == "delete") {
@@ -14,6 +9,8 @@ if (isset($_GET['action']) && sanitize($_GET['action']) == "delete") {
     $stmt = $dbh->prepare('DELETE FROM dk_lessons WHERE id = :id');
     $params = array(':id' => $id);
     $stmt->execute($params);
+
+    echo "<div class='alert alert-success'>Η διαγραφή του μαθήματος πραγματοποιήθηκε με επιτυχία.</div>";
 }
 
 $limit = 20;
@@ -60,12 +57,10 @@ if ($_SESSION['level'] == 3)
     $stmt = $dbh->prepare("SELECT * FROM dk_lessons where user_id = " . $_SESSION['userid'] . " $sortby $sorthow LIMIT $start,$limit;");
 else
     $stmt = $dbh->prepare("SELECT * FROM dk_lessons $sortby $sorthow LIMIT $start,$limit;");
-$stmt->execute();
-
-$results = $stmt->fetchALL();
-
+    $stmt->execute();
+    $results = $stmt->fetchALL();
 ?>
-
+<br/>
 <div class="container">
     <div class="col-sm-3">
         <?php include "sidebar.php"; ?>
@@ -73,7 +68,7 @@ $results = $stmt->fetchALL();
     <div class="col-sm-9">
         <div class="row">
             <div class="col-sm-9">
-                <h1>Μαθήματα</h1>
+                <h3>Εκπαιδευτικά Προγράμματα</h3>
             </div>
             <div class="col-sm-3">
                 <a class="btn btn-primary" href="add_lesson.php">Προσθήκη Νέου</a>
@@ -92,6 +87,11 @@ $results = $stmt->fetchALL();
                     } else {
                         echo "desc";
                     } ?>">Τίτλος</a></th>
+                <th><a href="lessons.php?sortby=username&amp;sorthow=<?php if ($sorthow == "desc") {
+                        echo "asc";
+                    } else {
+                        echo "desc";
+                    } ?>">Επιβλέπων Καθηγητής</a></th>
                 <th>Ενέργειες</th>
             </tr>
             </thead>
@@ -102,12 +102,8 @@ $results = $stmt->fetchALL();
                 <tr>
                     <th scope="row"><?php echo $result->id; ?></th>
                     <td><?php echo $result->title; ?></td>
-                    <td>
-                        <!--                        <a href="edit_lesson.php?id=-->
-                        <?php //echo $result->id; ?><!--" type="button"><span-->
-                        <!--                                class="fa fa-pencil" aria-hidden="true"></span></a>-->
-                        <a onclick='return confirm("Είστε σίγουρος οτι θέλετε να διαγράψετε το μάθημα <?php echo $result->title; ?>;")' href='?action=delete&id=<?php echo $result->id; ?>&'
-                           type="button"><span class="fa fa-trash-o" aria-hidden="true"></span></a></td>
+                    <td><?php echo $result->username; ?></td>
+                    <td><a class="btn btn-xs btn-danger" href="lessons.php?action=delete&id=<?php echo $result->id; ?>">Διαγραφή</a></td>
                 </tr>
             <?php } ?>
             </tbody>

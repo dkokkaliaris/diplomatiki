@@ -64,6 +64,7 @@ $stmt->execute();
 $results = $stmt->fetchALL();
 ?>
 
+<br/>
 <div class="container">
     <div class="col-sm-3">
         <?php include "sidebar.php"; ?>
@@ -71,7 +72,7 @@ $results = $stmt->fetchALL();
     <div class="col-sm-9">
         <div class="row">
             <div class="col-sm-9">
-                <h1>Πρότυπα Ερωτηματολόγια</h1>
+                <h3>Πρότυπα Ερωτηματολόγια</h3>
             </div>
             <div class="col-sm-3">
                 <a class="btn btn-primary" href="add_template.php">Προσθήκη Νέου</a>
