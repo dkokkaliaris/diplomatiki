@@ -37,7 +37,6 @@ if (!empty($_REQUEST['sorthow'])) {
     $sorthow = "desc";
 }
 
-
 $sql = "SELECT count(*) FROM dk_lessons where user_id = " . $_SESSION['userid'] . ";";
 $result = $dbh->prepare($sql);
 $result->execute();
@@ -45,74 +44,70 @@ $total_pages = $result->fetchColumn();
 
 
 /* Setup page vars for display. */
-if ($page == 0) $page = 1;                    //if no page var is given, default to 1.
+/*if ($page == 0) $page = 1;                    //if no page var is given, default to 1.
 $prev = $page - 1;                            //previous page is page - 1
 $next = $page + 1;                            //next page is page + 1
 $lastpage = ceil($total_pages / $limit);        //lastpage is = total pages / items per page, rounded up.
-$lpm1 = $lastpage - 1;
+$lpm1 = $lastpage - 1;*/
 $targetpage = "lessons.php";    //your file name  (the name of this file)
 
 // φέρνω όλα τα μαθήματα
 if ($_SESSION['level'] == 3)
     $stmt = $dbh->prepare("SELECT * FROM dk_lessons where user_id = " . $_SESSION['userid'] . " $sortby $sorthow LIMIT $start,$limit;");
 else
-    $stmt = $dbh->prepare("SELECT * FROM dk_lessons $sortby $sorthow LIMIT $start,$limit;");
+    $stmt = $dbh->prepare("SELECT A.*,B.first_name,B.last_name FROM dk_lessons A JOIN dk_users B ON A.user_id=B.id  $sortby $sorthow LIMIT $start,$limit;");
     $stmt->execute();
     $results = $stmt->fetchALL();
-?>
-<br/>
-<div class="container">
-    <div class="col-sm-3">
-        <?php include "sidebar.php"; ?>
-    </div>
-    <div class="col-sm-9">
-        <div class="row">
-            <div class="col-sm-9">
-                <h3>Εκπαιδευτικά Προγράμματα</h3>
-            </div>
-            <div class="col-sm-3">
-                <a class="btn btn-primary" href="add_lesson.php">Προσθήκη Νέου</a>
-            </div>
-        </div>
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th><a href="lessons.php?sortby=id&amp;sorthow=<?php if ($sorthow == "desc") {
-                        echo "asc";
-                    } else {
-                        echo "desc";
-                    } ?>">#</a></th>
-                <th><a href="lessons.php?sortby=title&amp;sorthow=<?php if ($sorthow == "desc") {
-                        echo "asc";
-                    } else {
-                        echo "desc";
-                    } ?>">Τίτλος</a></th>
-                <th><a href="lessons.php?sortby=username&amp;sorthow=<?php if ($sorthow == "desc") {
-                        echo "asc";
-                    } else {
-                        echo "desc";
-                    } ?>">Επιβλέπων Καθηγητής</a></th>
-                <th>Ενέργειες</th>
-            </tr>
-            </thead>
-            <tbody>
-            <?php
-            foreach ($results as $result) {
-                ?>
-                <tr>
-                    <th scope="row"><?php echo $result->id; ?></th>
-                    <td><?php echo $result->title; ?></td>
-                    <td><?php echo $result->username; ?></td>
-                    <td><a class="btn btn-xs btn-danger" href="lessons.php?action=delete&id=<?php echo $result->id; ?>">Διαγραφή</a></td>
-                </tr>
-            <?php } ?>
-            </tbody>
-        </table>
 
-        <?php
+
+// ================================== TO echo ξεκινάει εδώ ============================================
+// ================================== TO echo ξεκινάει εδώ ============================================
+// ================================== TO echo ξεκινάει εδώ ============================================
+echo '<div class="container-fluid">
+    <div class="row breadcrumb">
+        <div class="col-sm-12">
+            <a href="index.php">Αρχική Σελίδα</a> &gt; Εκπαιδευτικά Προγράμματα
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <h3>Εκπαιδευτικά Προγράμματα
+                <a class="btn btn-primary btn-sm pull-right" href="add_lesson.php">Προσθήκη Νέου</a>
+            </h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th><a href="lessons.php?sortby=id&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">#</a></th>
+                    <th><a href="lessons.php?sortby=title&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Τίτλος</a></th>
+                    <th><a href="lessons.php?sortby=username&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Επιβλέπων Καθηγητής</a></th>
+                    <th>Ενέργειες</th>
+                </tr>
+                </thead>
+                <tbody>';
+                foreach ($results as $result) {
+                    echo '
+                    <tr>
+                        <th scope="row">'.$result->id.'</th>
+                        <td>'.$result->title.'</td>
+                        <td>'.$result->first_name.''.$result->last_name.' </td>
+                        <td><a class="btn btn-sm btn-danger" onclick=\'return confirm("Είστε σίγουρος οτι θέλετε να διαγράψετε το μάθημα '.$result->title.';")\' href="lessons.php?action=delete&id='.$result->id.'"><span class="fa fa-trash-o" aria-hidden="true"></span></a></td>
+                    </tr>';
+                }
+                echo'
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">';
+
         // http://aspektas.com/blog/really-simple-php-pagination/
         // ================================== ΣΕΛΙΔΟΠΟΙΗΣΗ ============================================
-        $querystring = "";
+        /*$querystring = "";
         foreach ($_GET as $key => $value) {
             if ($key != "page") $querystring .= "&amp;$key=" . $value;
         }
@@ -175,13 +170,17 @@ else
                 $pagination .= "<li><a href=\"$targetpage?page=$next$querystring\">Επόμενο</a></li>";
             $pagination .= "</ul>";
             echo $pagination;
-        }
+        }*/
+        pagination($total_pages, $_GET, $targetpage);
         // ================================== ΣΕΛΙΔΟΠΟΙΗΣΗ ============================================
-        ?>
-
+        echo '
+        </div>
     </div>
-</div>
+</div>';
 
-<?php
+// ================================== TO echo τελειώνει εδώ ============================================
+// ================================== TO echo τελειώνειεδώ ============================================
+// ================================== TO echo τελειώνειεδώ ============================================
+
 get_footer();
 ?>

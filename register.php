@@ -1,9 +1,8 @@
 <?php
 include_once "includes/init.php";
 get_header();
-?>
 
-<?php
+
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $username = sanitize($_POST['username']);
     $email = sanitize($_POST['email']);
@@ -27,34 +26,32 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         echo "<div class='alert alert-success'>Ο χρήστης δημιουργήθηκε.</div>";
     }
 }
-?>
-
-<div class="container">
+echo '<br /><br />
+<div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
-            <div class="card-container">
+        <div class="col-lg-4 col-md-6 col-sm-12 col-lg-offset-4 col-md-offset-3">
+            <div class="box">
+
                 <img class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png">
+                <h4 class="text-sm-center">Εγγραφή Χρήστη</h4>
                 <p class="profile-name-card"></p>
                 <form class="form-signin" action="" method="post">
                     <span class="reauth-email"></span>
                     <div class="form-group">
-                        <input class="form-control" placeholder="Όνομα Χρήστη" name="username" required="" autofocus=""
-                               type="text">
+                        <input class="form-control" placeholder="Όνομα Χρήστη" name="username" required="" autofocus="" type="text">
                     </div>
                     <div class="form-group">
-                        <input class="form-control" placeholder="Email" name="email" required="" autofocus=""
-                               type="text">
+                        <input class="form-control" placeholder="Email" name="email" required="" autofocus="" type="text">
                     </div>
                     <div class="form-group">
                         <input class="form-control" placeholder="Κωδικός" required="" name="password" type="password">
                     </div>
-                    <button class="btn btn-lg btn-primary btn-block btn-signin" type="submit">Δημιουρία</button>
+                    <button class="btn btn-primary btn-block btn-signin" type="submit">Δημιουρία</button>
                 </form>
             </div>
         </div>
     </div>
-</div>
+</div>';
 
-<?php
 get_footer();
 ?>

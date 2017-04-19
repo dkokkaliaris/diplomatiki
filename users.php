@@ -1,9 +1,7 @@
 <?php
 include_once "includes/init.php";
 get_header();
-?>
 
-<?php
 if ($_GET['del'] && $_GET['del']>0) {
     $sql="DELETE FROM dk_users WHERE id=".$_GET['del'];
     $mysqli->query($sql);
@@ -54,75 +52,40 @@ $result->execute();
 $total_pages = $result->fetchColumn();
 
 /* Setup page vars for display. */
-if ($page == 0) $page = 1;                    //if no page var is given, default to 1.
+/*if ($page == 0) $page = 1;                    //if no page var is given, default to 1.
 $prev = $page - 1;                            //previous page is page - 1
 $next = $page + 1;                            //next page is page + 1
 $lastpage = ceil($total_pages / $limit);        //lastpage is = total pages / items per page, rounded up.
-$lpm1 = $lastpage - 1;
+$lpm1 = $lastpage - 1;*/
 $targetpage = "users.php";    //your file name  (the name of this file)
 
-?>
-
-<br/>
-<div class="container">
-    <div class="col-sm-3">
-        <?php include "sidebar.php"; ?>
-    </div>
-    <div class="col-sm-9">
-        <div class="row">
-            <div class="col-sm-10">
-                <h3>Διαχείριση Χρηστών</h3>
-            </div>
-			<div class="col-sm-2">
-                <a class="btn btn-primary btn-sm" href="new-user.php">Νέος Χρήστης</a>
-            </div>
+echo '<div class="container-fluid">
+    <div class="row breadcrumb">
+        <div class="col-sm-12">
+        <a href="index.php">Αρχική Σελίδα</a> &gt; Διαχείριση Χρηστών
         </div>
-        <hr/>
-        <div class="row">
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <h3>Διαχείριση Χρηστών
+                <a class="btn btn-primary btn-sm pull-right" href="new-user.php">Νέος Χρήστης</a>
+            </h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
             <form action="users.php" method="get">
                 <table class="table table-bordered table-striped">
                     <thead>
                     <tr>
-                        <th><a href="users.php?sortby=id&amp;sorthow=<?php if ($sorthow == "desc") {
-                                echo "asc";
-                            } else {
-                                echo "desc";
-                            } ?>">ID</a></th>
-                        <th><a href="users.php?sortby=first_name&amp;sorthow=<?php if ($sorthow == "desc") {
-                                echo "asc";
-                            } else {
-                                echo "desc";
-                            } ?>">Όνομα</a></th>
-                        <th><a href="users.php?sortby=last_name&amp;sorthow=<?php if ($sorthow == "desc") {
-                                echo "asc";
-                            } else {
-                                echo "desc";
-                            } ?>">Επώνυμο</a></th>
-                        <th><a href="users.php?sortby=aem&amp;sorthow=<?php if ($sorthow == "desc") {
-                                echo "asc";
-                            } else {
-                                echo "desc";
-                            } ?>">AEM</a></th>
-                        <th><a href="users.php?sortby=email&amp;sorthow=<?php if ($sorthow == "desc") {
-                                echo "asc";
-                            } else {
-                                echo "desc";
-                            } ?>">Email</a></th>
-                        <th><a href="users.php?sortby=username&amp;sorthow=<?php if ($sorthow == "desc") {
-                                echo "asc";
-                            } else {
-                                echo "desc";
-                            } ?>">Username</a></th>
-                        <th><a href="users.php?sortby=telephone&amp;sorthow=<?php if ($sorthow == "desc") {
-                                echo "asc";
-                            } else {
-                                echo "desc";
-                            } ?>">Κινητό</a></th>
-                        <th><a href="users.php?sortby=type&amp;sorthow=<?php if ($sorthow == "desc") {
-                                echo "asc";
-                            } else {
-                                echo "desc";
-                            } ?>">Τύπος Χρήστη</a></th>
+                        <th><a href="users.php?sortby=id&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">ID</a></th>
+                        <th><a href="users.php?sortby=first_name&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Όνομα</a></th>
+                        <th><a href="users.php?sortby=last_name&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Επώνυμο</a></th>
+                        <th><a href="users.php?sortby=aem&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">AEM</a></th>
+                        <th><a href="users.php?sortby=email&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Email</a></th>
+                        <th><a href="users.php?sortby=username&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Username</a></th>
+                        <th><a href="users.php?sortby=telephone&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Κινητό</a></th>
+                        <th><a href="users.php?sortby=type&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Τύπος Χρήστη</a></th>
                         <th>Ενέργειες</th>
                     </tr>
                     <tr>
@@ -140,9 +103,8 @@ $targetpage = "users.php";    //your file name  (the name of this file)
                         </td>
 
                     </tr>
-                    </thead>
+                    </thead>';
 
-                    <?php
                     $addtosql = "";
 
                     $onoma = isset($_REQUEST['first_name']) ? $_REQUEST['first_name'] : '';
@@ -191,90 +153,23 @@ $targetpage = "users.php";    //your file name  (the name of this file)
                               <td>' . $user->username . '</td>
                               <td>' . $user->telephone . '</td>
                               <td>' . $user->type . '</td>
-                              <td><a class="btn btn-xs btn-success" href="edit_user.php?id=' . $user->id . '">Επεξεργασία</a> <a class="btn btn-xs btn-danger" href="users.php?del=' . $user->id . '">Διαγραφή</a></td>
+                              <td><a class="btn btn-sm btn-success" href="edit_user.php?id=' . $user->id . '">
+                                <span class="fa fa-pencil" aria-hidden="true"></span></a> <a class="btn btn-sm btn-danger" href="users.php?del=' . $user->id . '"><span class="fa fa-trash-o" aria-hidden="true"></span></a></td>
 
                           </tr>';
                     }
 
-                    ?>
+                echo '</table>
+            </form>';
 
-                </table>
-            </form>
-
-            <?php
             // http://aspektas.com/blog/really-simple-php-pagination/
             // ================================== ΣΕΛΙΔΟΠΟΙΗΣΗ ============================================
-            $querystring = "";
-            foreach ($_GET as $key => $value) {
-                if ($key != "page") $querystring .= "&amp;$key=" . $value;
-            }
-
-            $pagination = "";
-            if ($lastpage > 1) {
-                $pagination .= "<ul class=\"pagination\">";
-                //previous button
-                if ($page > 1)
-                    $pagination .= "<li><a href=\"$targetpage?page=$prev$querystring\">Πίσω</a></li>";
-
-                //pages
-                if ($lastpage < 7 + ($adjacents * 2))    //not enough pages to bother breaking it up
-                {
-                    for ($counter = 1; $counter <= $lastpage; $counter++) {
-                        if ($counter == $page)
-                            $pagination .= "<li><span class=\"current\">$counter</span></li>";
-                        else
-                            $pagination .= "<li><a href=\"$targetpage?page=$counter$querystring\">$counter</a></li>";
-                    }
-                } elseif ($lastpage > 5 + ($adjacents * 2))    //enough pages to hide some
-                {
-                    //close to beginning; only hide later pages
-                    if ($page < 1 + ($adjacents * 2)) {
-                        for ($counter = 1; $counter < 2 + ($adjacents * 2); $counter++) {
-                            if ($counter == $page)
-                                $pagination .= "<li><span class=\"current\">$counter</span></li>";
-                            else
-                                $pagination .= "<li><a href=\"$targetpage?page=$counter$querystring\">$counter</a></li>";
-                        }
-                        $pagination .= "<li><a href=\"$targetpage?page=$lpm1$querystring\">$lpm1</a></li>";
-                        $pagination .= "<li><a href=\"$targetpage?page=$lastpage$querystring\">$lastpage</a></li>";
-                    } //in middle; hide some front and some back
-                    elseif ($lastpage - ($adjacents * 2) > $page && $page > ($adjacents * 2)) {
-                        $pagination .= "<li><a href=\"$targetpage?page=1$querystring\">1</a></li>";
-                        $pagination .= "<li><a href=\"$targetpage?page=2$querystring\">2</a></li>";
-                        for ($counter = $page - $adjacents; $counter <= $page + $adjacents; $counter++) {
-                            if ($counter == $page)
-                                $pagination .= "<li><span class=\"current\">$counter</span></li>";
-                            else
-                                $pagination .= "<li><a href=\"$targetpage?page=$counter$querystring\">$counter</a></li>";
-                        }
-                        $pagination .= "<li><a href=\"$targetpage?page=$lpm1$querystring\">$lpm1</a></li>";
-                        $pagination .= "<li><a href=\"$targetpage?page=$lastpage$querystring\">$lastpage</a></li>";
-                    } //close to end; only hide early pages
-                    else {
-                        $pagination .= "<li><a href=\"$targetpage?page=1$querystring\">1</a></li>";
-                        $pagination .= "<li><a href=\"$targetpage?page=2$querystring\">2</a></li>";
-                        for ($counter = $lastpage - (2 + ($adjacents * 2)); $counter <= $lastpage; $counter++) {
-                            if ($counter == $page)
-                                $pagination .= "<li><span class=\"current\">$counter</span></li>";
-                            else
-                                $pagination .= "<li><a href=\"$targetpage?page=$counter$querystring\">$counter</a></li>";
-                        }
-                    }
-                }
-
-                //next button
-                if ($page < $counter - 1)
-                    $pagination .= "<li><a href=\"$targetpage?page=$next$querystring\">Επόμενο</a></li>";
-                $pagination .= "</ul>";
-                echo $pagination;
-            }
+            pagination($total_pages, $_GET, $targetpage);
             // ================================== ΣΕΛΙΔΟΠΟΙΗΣΗ ============================================
-            ?>
 
-        </div>
+        echo '</div>
     </div>
-</div>
+</div>';
 
-<?php
 get_footer();
 ?>

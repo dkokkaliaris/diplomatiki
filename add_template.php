@@ -1,8 +1,14 @@
 <?php
 include_once "includes/init.php";
 get_header();
-?>
-<?php
+
+echo '<div class="container-fluid">
+<div class="row breadcrumb">
+    <div class="col-sm-12">
+    <a href="index.php">Αρχική Σελίδα</a> &gt; <a href="templates.php">Πρότυπα Ερωτηματολόγια</a> &gt; Προσθήκη Νέου Πρότυπου Ερωτηματολογίου
+    </div>
+</div>';
+
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     if (!isset($_POST['title'], $_POST['description']) || ($_POST['title'] == '' || $_POST['description'] == '')) {
         echo "<div class='alert alert-danger'>Παρακαλώ συμπληρώστε όλα τα πεδία.</div>";
@@ -27,20 +33,18 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             header("Location: edit_template.php?id=$new_id");
             exit;
         } else {
-            echo "<div class='alert alert-danger'>Η εκχώρηση δεν πραγματοποιήθηκε. Δοκιμάστε ξανά.</div>";
+            echo "<div class='row'><div class='col-sm-12'><div class='alert alert-danger'>Η εκχώρηση δεν πραγματοποιήθηκε. Δοκιμάστε ξανά.</div></div></div>";
         }
     }
 }
-?>
-    <div class="container">
-        <div class="col-sm-9">
-            <div class="row">
-                <div class="col-sm-8">
-                    <h2>Προσθήκη Νέου Πρότυπου Ερωτηματολογίου</h2>
+echo '<div class="row">
+            <div class="col-lg-6 col-md-8 col-sm-12 col-lg-offset-3 col-md-offset-2">
+                <div class="box">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <h3>Προσθήκη Νέου Πρότυπου Ερωτηματολογίου</h3>
+                    </div>
                 </div>
-            </div>
-            <hr/>
-            <div class="row">
                 <form action="add_template.php" method="post">
                     <div class="form-group">
                         <label class="form-control-label" for="title">Τίτλος: </label>
@@ -50,35 +54,28 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                     <div class="form-group">
                         <label for="description" class="form-control-label">Σύντομη Περιγραφή: </label>
                         <textarea rows="5" class="form-control" name="description" id="description"></textarea>
-                    </div>
+                    </div>';
 
-                    <?php
                     // Φέρουμε την λίστα με τα κανάλια
                     $stmt = $dbh->prepare('SELECT * FROM dk_channel');
                     $stmt->execute();
                     $results = $stmt->fetchAll();
                     $total = $stmt->rowCount();
                     if ($total > 0) {
-                        ?>
-
-                        <div class="form-group">
-                            <label for="date_ends" class="form-control-label">Επιλογή Καναλιού </label><br/>
-                            <?php
-
+                        echo '<div class="form-group">
+                            <label for="date_ends" class="form-control-label">Επιλογή Καναλιού </label><br/>';
                             foreach ($results as $result) {
-                                ?>
-                                <label for="channel_<?php echo $result->id; ?>"><input type="checkbox" name="channel[]"
-                                                                                       value="<?php echo $result->id; ?>"
-                                                                                       id="channel_<?php echo $result->id; ?>"/> <?php echo $result->title; ?>
-                                </label><br/>
-                            <?php } ?>
-                        </div>
-                    <?php } ?>
-                    <button class="btn btn-primary" type="submit">Δημιουργία</button>
+                                echo "<label for='channel_$result->id'><input type='checkbox' name='channel[]' value='$result->id' id='channel_$result->id'/> $result->title</label><br/>";
+                            }
+                        echo '</div>';
+                    }
+                    echo '<button class="btn btn-primary btn-sm full-width" type="submit">Δημιουργία</button>
                 </form>
             </div>
+            </div>
         </div>
-    </div>
+    </div>';
+?>
     <script>
         jQuery('#time_begins').datetimepicker({
             lang: 'el',

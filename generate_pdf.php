@@ -1,6 +1,6 @@
 <?php
 include_once "includes/init.php";
-include_once("tcpdf/tcpdf.php");
+include_once("includes/tcpdf/tcpdf.php");
 
 //Αρχή Ετοιμος κώδικας από TCPDF
 ob_end_clean();
@@ -15,7 +15,6 @@ $pdf->AddPage();
 $html = "";
 
 $id = $_GET['id'];
-
 // φέρνω όλα τα ερωτηματολόγια
 $stmt = $dbh->prepare("SELECT * FROM dk_tokens where questionnaire_id = $id and used = 0;");
 $stmt->execute();

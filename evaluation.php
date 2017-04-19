@@ -41,61 +41,56 @@ $total_pages = $result->fetchColumn();
 
 
 /* Setup page vars for display. */
-if ($page == 0) $page = 1;                    //if no page var is given, default to 1.
+/*if ($page == 0) $page = 1;                    //if no page var is given, default to 1.
 $prev = $page - 1;                            //previous page is page - 1
 $next = $page + 1;                            //next page is page + 1
 $lastpage = ceil($total_pages / $limit);        //lastpage is = total pages / items per page, rounded up.
-$lpm1 = $lastpage - 1;
+$lpm1 = $lastpage - 1;*/
 $targetpage = "evaluation.php";    //your file name  (the name of this file)
 
 
 // φέρνω όλα τα μαθήματα
 $stmt = $dbh->prepare("SELECT * FROM dk_lessons join dk_questionnaire_lessons on dk_questionnaire_lessons.lessons_id =  dk_lessons.id join dk_questionnaire on dk_questionnaire_lessons.questionnaire_id = dk_questionnaire.id where dk_questionnaire.time_begins < NOW() and dk_questionnaire.time_ends > NOW() GROUP by dk_questionnaire_lessons.lessons_id $sortby $sorthow LIMIT $start,$limit;");
 $stmt->execute();
-
 $results = $stmt->fetchALL();
-
-?>
-
-<br/>
-<div class="container">
-    <div class="col-sm-3">
-        <?php include "sidebar.php"; ?>
-    </div>
-    <div class="col-sm-9">
-        <div class="row">
-            <div class="col-sm-9">
-                <h3>Αξιολόγηση Μαθημάτων</h3>
-            </div>
+echo '<div class="container-fluid">
+    <div class="row breadcrumb">
+        <div class="col-sm-12">
+        <a href="index.php">Αρχική Σελίδα</a> &gt; Αξιολόγηση Μαθημάτων
         </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <h3>Αξιολόγηση Μαθημάτων</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
         <table class="table table-striped">
             <thead>
             <tr>
-                <th><a href="evaluation.php?sortby=title&amp;sorthow=<?php if ($sorthow == "desc") {
-                        echo "asc";
-                    } else {
-                        echo "desc";
-                    } ?>">Τίτλος</a></th>
+                <th><a href="evaluation.php?sortby=title&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Τίτλος</a></th>
                 <th>Αξιολόγηση</th>
             </tr>
             </thead>
-            <tbody>
-            <?php
-            foreach ($results as $result) {
-                ?>
-                <tr>
-                    <td><?php echo $result->title; ?></td>
-                    <td><a href="evaluate_questionnaire.php?id=<?php echo $result->questionnaire_id; ?>"> <i
-                                class="fa fa-list-alt" style="color: darkgreen;" aria-hidden="true"></i></a></td>
-                </tr>
-            <?php } ?>
-            </tbody>
+            <tbody>';
+                foreach ($results as $result) {
+                    echo '<tr>
+                        <td'.$result->title.'</td>
+                        <td><a href="evaluate_questionnaire.php?id='.$result->questionnaire_id.'">
+                            <i class="fa fa-list-alt" style="color: darkgreen;" aria-hidden="true"></i></a>
+                        </td>
+                    </tr>';
+                }
+            echo '</tbody>
         </table>
-
-        <?php
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">';
         // http://aspektas.com/blog/really-simple-php-pagination/
         // ================================== ΣΕΛΙΔΟΠΟΙΗΣΗ ============================================
-        $querystring = "";
+        /*$querystring = "";
         foreach ($_GET as $key => $value) {
             if ($key != "page") $querystring .= "&amp;$key=" . $value;
         }
@@ -158,13 +153,13 @@ $results = $stmt->fetchALL();
                 $pagination .= "<li><a href=\"$targetpage?page=$next$querystring\">Επόμενο</a></li>";
             $pagination .= "</ul>";
             echo $pagination;
-        }
+        }*/
+        pagination($total_pages, $_GET, $targetpage);
         // ================================== ΣΕΛΙΔΟΠΟΙΗΣΗ ============================================
-        ?>
-
+    echo '
     </div>
 </div>
+</div>';
 
-<?php
 get_footer();
 ?>
