@@ -7,8 +7,9 @@ $ip = $_SERVER['REMOTE_ADDR'];
 $id = $_GET['id'];
 
 // ελέγχω αν ο χρήστης έχει ξανακάνει αξιολόγιση το συγκεκριμένο ερωτηματολόγιο, και αν ναι αν περασε μιση ωρα απο την τελευταία φορά
-$stmt = $dbh->prepare("SELECT * FROM dk_ips where ip = '$ip' and questionnaire_id = $id");
-$stmt->execute();
+$stmt = $dbh->prepare("SELECT * FROM dk_ips where ip = :ip and questionnaire_id = :id");
+$params = array(':ip'=>$ip,':id' => $id);
+$stmt->execute($params);
 $row = $stmt->fetchObject();
 
 $available = true;
@@ -36,21 +37,24 @@ function random_string($length)
 }
 
 // φέρνω το ερωτηματολόγιο
-$stmt = $dbh->prepare("SELECT * FROM dk_questionnaire where id = $id");
-$stmt->execute();
+$stmt = $dbh->prepare("SELECT * FROM dk_questionnaire where id = :id");
+$params = array(':id' => $id);
+$stmt->execute($params);
 $result = $stmt->fetchObject();
 
 if ($_SERVER['REQUEST_METHOD'] == "POST" && $available) {
 
-    $stmt = $dbh->prepare("SELECT * FROM dk_questionnaire_questions where questionnaire_id = $id");
-    $stmt->execute();
+    $stmt = $dbh->prepare("SELECT * FROM dk_questionnaire_questions where questionnaire_id = :id");
+    $params = array(':id' => $id);
+    $stmt->execute($params);
     $results = $stmt->fetchAll();
 
     $requiredFields = true;
     foreach ($results as $q) {
 
-        $stmt = $dbh->prepare("SELECT * FROM dk_question where id = $q->question_id");
-        $stmt->execute();
+        $stmt = $dbh->prepare("SELECT * FROM dk_question where id = :id");
+        $params = array(':id' => $q->question_id);
+        $stmt->execute($params);
         $questionData = $stmt->fetchObject();
 
         if ($questionData->type == 'file') {
@@ -71,8 +75,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && $available) {
     if ($requiredFields) {
         foreach ($results as $q) {
 
-            $stmt = $dbh->prepare("SELECT * FROM dk_question where id = $q->question_id");
-            $stmt->execute();
+            $stmt = $dbh->prepare("SELECT * FROM dk_question where id = :id");
+            $params = array(':id' => $q->question_id);
+            $stmt->execute($params);
             $questionData = $stmt->fetchObject();
             if ($questionData->type == 'file') {
                 $target_dir = "uploads/";
@@ -99,8 +104,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && $available) {
             }
         }
 
-        $stmt = $dbh->prepare("SELECT * FROM dk_ips where ip = '$ip' and questionnaire_id = $id");
-        $stmt->execute();
+        $stmt = $dbh->prepare("SELECT * FROM dk_ips where ip = :ip and questionnaire_id = :id");
+        $params = array(':ip'=>$ip,':id' => $id);
+        $stmt->execute($params);
         $ipsResult = $stmt->fetchObject();
 
 
@@ -117,13 +123,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && $available) {
         header("Location: thank_you_page.php");
     }
 }
+$breadcrumb=array(
+    array('title'=>'Ανώνυμη αξιολόγηση Ερωτηματολογίου','href'=>'')
+);
 
-echo '<div class="container-fluid" xmlns="http://www.w3.org/1999/html">
-        <div class="row breadcrumb">
-            <div class="col-sm-12">
-                <a href="index.php">Αρχική Σελίδα</a> &gt; Ανώνυμη αξιολόγηση Ερωτηματολογίου
-            </div>
-        </div>
+echo '<div class="container-fluid">
+    '.show_breacrumb($breadcrumb).'
         <div class="row">
             <div class="col-sm-12">
                 <h3>'.$result->title.'</h3>
@@ -137,18 +142,21 @@ echo '<div class="container-fluid" xmlns="http://www.w3.org/1999/html">
                     echo '<form action="anonymous_evaluate_questionnaire.php?id='.$id.'" method="post" enctype="multipart/form-data">';
                         $questionNo = 0;
                         // φέρνω τις ερωτήσεις του
-                        $stmt = $dbh->prepare("SELECT * FROM dk_questionnaire_questions where questionnaire_id = $id order by order_by");
-                        $stmt->execute();
+                        $stmt = $dbh->prepare("SELECT * FROM dk_questionnaire_questions where questionnaire_id = :id order by order_by");
+                        $params = array(':id' => $id);
+                        $stmt->execute($params);
                         $results = $stmt->fetchAll();
 
                         foreach ($results as $q) {
 
-                            $stmt = $dbh->prepare("SELECT * FROM dk_question where id = $q->question_id");
-                            $stmt->execute();
+                            $stmt = $dbh->prepare("SELECT * FROM dk_question where id = :id");
+                            $params = array(':id' => $q->question_id);
+                            $stmt->execute($params);
                             $questionData = $stmt->fetchObject();
 
-                            $stmt = $dbh->prepare("SELECT * FROM dk_question_options where question_id = $q->question_id");
-                            $stmt->execute();
+                            $stmt = $dbh->prepare("SELECT * FROM dk_question_options where question_id = :id");
+                            $params = array(':id' => $q->question_id);
+                            $stmt->execute($params);
                             $questionOptions = $stmt->fetchAll();
 
 
@@ -176,7 +184,7 @@ echo '<div class="container-fluid" xmlns="http://www.w3.org/1999/html">
                         echo '<input type="submit" value="Καταχώρηση απαντήσεων" name="submit" class="btn btn-success btn-sm" style="margin-bottom: 10px;">
                     </form>';
                 } else {
-                    echo '<h4>Πρέπει να περάσουν 30 λεπτά από την προηγούμενη αξιολόγηση.</h4>';
+                    echo '<h4>Πρέπει να περάσουν 30 λεπτά από την προηγούμενη αξιολόγιση.</h4>';
                 }
         echo '</div>
     </div>

@@ -30,7 +30,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 }
 echo '<br />
 <br />
-
         <div class="row">
              <div class="col-lg-6 col-md-8 col-sm-12 col-lg-offset-3 col-md-offset-2">
                 <div class="box fixed-height">
@@ -42,7 +41,7 @@ echo '<br />
                             <option value="id-2">Σύνδεση μέσω του ιδρυματικού λογαριασμού (Χρήση SSO)</option>
                             <option value="id-3">Σύνδεση για Ανώνυμη Αξιολόγηση</option>
                             <option value="id-4">Σύνδεση με χρήση κωδικού Token</option>
-                            <option value="id-4">Σύνδεση μέσω Εφαρμογής API</option>
+                            <option value="id-5">Σύνδεση μέσω Εφαρμογής API</option>
                         </select>
                     </div>
                     <div class="login-container" id="id-1">
@@ -60,18 +59,12 @@ echo '<br />
                             <button class="btn btn-sm btn-primary btn-block btn-signin" type="submit">Είσοδος</button>
                         </form>
                     </div>
-
-
                     <div class="login-container hide" id="id-2"><br/>
                         <p>Για να μεταβείτε στην σελίδα με χρήση των ιδρυματικών κωδικών, παρακαλούμε πατήστε <a href="anonymous_questionnaires.php">εδώ</a>.</p>
                     </div>
-
-
                     <div class="login-container hide" id="id-3"><br/>
                         <p>Για να μεταβείτε στην σελίδα ανώνυμης αξιολόγησης, παρακαλούμε πατήστε <a href="anonymous_questionnaires.php">εδώ</a>.</p>
                     </div>
-
-
                     <div class="login-container hide" id="id-4"><br/>
                         <p>Παρακαλούμε συμπληρώστε στο παρακάτω πεδίο της φόρμας τον μοναδικό κωδικό token που λάβατε από τον υπεύθυνο του εκπαιδευτικού προγράμματος που θέλετε να αξιολογήσετε.</p>
                         <form action="find_questionnaire_fromtoken.php" method="post">
@@ -81,9 +74,7 @@ echo '<br />
                             <button class="btn btn-sm btn-primary btn-block" type="submit">Είσοδος</button>
                         </form>
                     </div>
-
-
-                    <div class="login-container hide" id="id-6"><br/>
+                    <div class="login-container hide" id="id-5"><br/>
                         <h5>Σύνδεση μέσω Εφαρμογής API</h5>
                         <p>Για να μεταβείτε στην σελίδα αξιολόγησης με χρήση API, παρακαλούμε πατήστε <a href="anonymous_questionnaires.php">εδώ</a>.</p>
                     </div>
@@ -94,9 +85,13 @@ echo '<br />
 ?>
 <script>
     jQuery(document).ready(function () {
+        //όταν αλλάξω την επιλογή εισόδου απο την λιστα τοτε παιρνει την τιμη της επιλογης που εμείς βαλαμε το id του κουτιου
         jQuery('#login-selection').on('change', function () {
-            jQuery('.login-container').fadeOut();
-            jQuery('.login-container#'+jQuery('#login-selection').val()).fadeIn();
+
+            //κρύβει ολα τα div (κουτια) με την κλαση login-container
+            jQuery('.login-container').hide();
+            //εμφανίζει μονο το div που εχει το id που επιλεχθηκε.
+            jQuery('#'+jQuery('#login-selection').val()).fadeIn();
         });
     });
 </script>

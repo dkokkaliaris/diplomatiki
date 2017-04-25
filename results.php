@@ -34,7 +34,14 @@ if (!empty($_REQUEST['sorthow'])) {
 $stmt = $dbh->prepare('SELECT count(*) FROM dk_questionnaire join dk_answers on dk_questionnaire.id = dk_answers.questionnaire_id where template = 0 and dk_questionnaire.user_id = :id group by dk_questionnaire.id');
 $params = array(':id' => $_SESSION['userid']);
 $stmt->execute($params);
+//$total_pages = $result->fetchColumn();
 
+/* Setup page vars for display. */
+/*if ($page == 0) $page = 1;                    //if no page var is given, default to 1.
+$prev = $page - 1;                            //previous page is page - 1
+$next = $page + 1;                            //next page is page + 1
+$lastpage = ceil($total_pages / $limit);        //lastpage is = total pages / items per page, rounded up.
+$lpm1 = $lastpage - 1;*/
 $targetpage = "questionnaires.php";    //your file name  (the name of this file)
 
 // φέρνω όλα τα ερωτηματολόγια που έχουν απαντηθεί και δεν είναι κλειδωμένα

@@ -1,8 +1,8 @@
 <?php
 include_once "includes/init.php";
 get_header();
-if (!$_SESSION['userid']) {
-    header("Location: login.php");
+if (!is_logged_in()) {
+    header("Location: ".BASE_URL.'login.php');
     exit;
 }
 
@@ -72,13 +72,13 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         }
     }
 }
+$breadcrumb=array(
+    array('title'=>'Διαχείριση Κωδικών Token','href'=>'tokens.php'),
+    array('title'=>'Προσθήκη Νέου Κωδικού Token','href'=>''),
+);
 echo '
 <div class="container-fluid">
-    <div class="row breadcrumb">
-        <div class="col-sm-12">
-        <a href="index.php">Αρχική Σελίδα</a> &gt; <a href="tokens.php">Διαχείριση Κωδικών Token</a> &gt; Προσθήκη Νέου Κωδικού Token
-        </div>
-    </div>
+   '.show_breacrumb($breadcrumb).'
     <div class="row">
         <div class="col-sm-12 col-lg-6 col-md-8 col-lg-offset-3 col-md-offset-2">
             <div class="box">
@@ -99,8 +99,9 @@ echo '
                             <select name="questionnaire" id="questionnaire"
                                     class="form-control type">
                                 <option value="0">Επιλογή Ερωτηματολογίου</option>';
-                                $stmt = $dbh->prepare('SELECT * FROM dk_questionnaire where template = 0 and user_id = ' . $_SESSION['userid']);
-                                $stmt->execute();
+                                $stmt = $dbh->prepare('SELECT * FROM dk_questionnaire where template = 0 and user_id = :id;');
+                                $params = array(':id' => $_SESSION['userid']);
+                                $stmt->execute($params);
 
                                 $results = $stmt->fetchALL();
                                 foreach ($results as $result) {

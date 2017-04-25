@@ -1,7 +1,10 @@
 <?php
 include_once "includes/init.php";
 get_header();
-
+if (!is_logged_in()) {
+    header("Location: ".BASE_URL.'login.php');
+    exit;
+}
 // σε περίπτωση που θέλω να διαγράψω ένα μάθημα, παίρνω από το URL
 // το action και το ID του και τρέχω το query.
 if (isset($_GET['action']) && sanitize($_GET['action']) == "delete") {
@@ -26,21 +29,21 @@ if (isset($_GET['page'])) {
 $sortby = 'order by ';
 // για ταξινόμηση
 if (!empty($_REQUEST['sortby'])) {
-    $sortby .= $_REQUEST['sortby'];
+    $sortby .= sanitize($_REQUEST['sortby']);
 } else {
     $sortby .= "id";
 }
 
 if (!empty($_REQUEST['sorthow'])) {
-    $sorthow = $_REQUEST['sorthow'];
+    $sorthow = sanitize($_REQUEST['sorthow']);
 } else {
     $sorthow = "desc";
 }
 
-$sql = "SELECT count(*) FROM dk_lessons where user_id = " . $_SESSION['userid'] . ";";
-$result = $dbh->prepare($sql);
-$result->execute();
-$total_pages = $result->fetchColumn();
+$stmt = $dbh->prepare('SELECT count(*) FROM dk_lessons where user_id = :id');
+$params = array(':id' => $_SESSION['userid']);
+$stmt->execute($params);
+$total_pages = $stmt->fetchColumn();
 
 
 /* Setup page vars for display. */
@@ -59,16 +62,14 @@ else
     $stmt->execute();
     $results = $stmt->fetchALL();
 
+// ================================== TO echo ξεκινάει εδώ ============================================
 
-// ================================== TO echo ξεκινάει εδώ ============================================
-// ================================== TO echo ξεκινάει εδώ ============================================
-// ================================== TO echo ξεκινάει εδώ ============================================
+$breadcrumb=array(
+    array('title'=>'Εκπαιδευτικά Προγράμματα','href'=>'')
+);
+
 echo '<div class="container-fluid">
-    <div class="row breadcrumb">
-        <div class="col-sm-12">
-            <a href="index.php">Αρχική Σελίδα</a> &gt; Εκπαιδευτικά Προγράμματα
-        </div>
-    </div>
+    '.show_breacrumb($breadcrumb).'
     <div class="row">
         <div class="col-sm-12">
             <h3>Εκπαιδευτικά Προγράμματα

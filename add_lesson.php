@@ -1,12 +1,16 @@
 <?php
 include_once "includes/init.php";
+if (!is_logged_in()) {
+    header("Location: ".BASE_URL.'login.php');
+    exit;
+}
 get_header();
+$breadcrumb=array(
+    array('title'=>'Εκπαιδευτικά Προγράμματα','href'=>'lessons.php'),
+    array('title'=>'Προσθήκη Νέου Εκπαιδευτικού Προγράμματος','href'=>''),
+);
 echo '<div class="container-fluid">
-<div class="row breadcrumb">
-    <div class="col-sm-12">
-    <a href="index.php">Αρχική Σελίδα</a> &gt; <a href="lessons.php">Εκπαιδευτικά Προγράμματα</a> &gt; Προσθήκη Νέου Εκπαιδευτικού Προγράμματος
-    </div>
-</div>';
+'.show_breacrumb($breadcrumb);
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     // έλεγχω αν είναι καθηγητής και δεν έχει συμπληρώσει τον τίτλο
@@ -82,6 +86,5 @@ echo '<div class="row">
         </div>
     </div>
 </div>';
-
 get_footer();
 ?>

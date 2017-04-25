@@ -1,10 +1,10 @@
 <?php
 include_once "includes/init.php";
-get_header();
-if(!$_SESSION){
-    header("Location: /login.php");
-    exit();
+if (!is_logged_in()) {
+    header("Location: ".BASE_URL.'login.php');
+    exit;
 }
+get_header();
 ?>
 <?php
 if ($_SERVER['REQUEST_METHOD']=="GET") {
@@ -18,12 +18,11 @@ if ($_SERVER['REQUEST_METHOD']=="GET") {
         $stmt->execute($params);
     }
 }
+$breadcrumb=array(
+    array('title'=>'Ερωτηματολόγια','href'=>'')
+);
 echo '<div class="container-fluid">
-    <div class="row breadcrumb">
-        <div class="col-sm-12">
-        <a href="index.php">Αρχική Σελίδα</a> &gt; Ερωτηματολόγια
-        </div>
-    </div>
+    '.show_breacrumb($breadcrumb).'
         <div class="row">
             <div class="col-sm-12">
                 <h3>Ερωτηματολόγια<a class="btn btn-primary btn-sm pull-right" href="add_question.php">Προσθήκη Νέου</a></h3>
@@ -50,8 +49,8 @@ echo '<div class="container-fluid">
                     echo '<tr>
                       <th scope="row">'.$result->id.'</th>
                       <td>'.$result->title.'</td>
-                      <td>'.$result->date_begins.'</td>
-                      <td>'.$result->date_ends.'</td>
+                      <td>'.date('d/m/Y H:i', strtotime($result->time_begins)).'</td>
+                      <td>'.date('d/m/Y H:i', strtotime($result->time_ends)).'</td>
                       <td>'.($result->is_locked?"Ναι":"Όχι").'</td>
                       <td><a href="edit_question.php/?id='.$result->id.'" type="button" class="btn btn-sm btn-success"><span class="fa fa-pencil" aria-hidden="true"></span></a> <a onclick=\'return confirm("Διαγραφή")\' class="btn btn-sm btn-danger" href="questions.php?id='.$result->id.'&action=delete" type="button"><span class="fa fa-trash-o" aria-hidden="true"></span></a></td>
                     </tr>';

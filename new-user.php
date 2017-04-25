@@ -1,13 +1,21 @@
 <?php
 include_once "includes/init.php";
+if (!is_logged_in()) {
+    header("Location: ".BASE_URL.'login.php');
+    exit;
+}else{
+    if ($_SESSION['level'] >= 2) {
+        header("Location: ".BASE_URL.'index.php');
+        exit;
+    }
+}
 get_header();
-
+$breadcrumb=array(
+    array('title'=>'Διαχείριση Χρηστών','href'=>'users.php'),
+    array('title'=>'Νέος Χρήστης','href'=>''),
+);
 echo '<div class="container-fluid">
-<div class="row breadcrumb">
-    <div class="col-sm-12">
-    <a href="index.php">Αρχική Σελίδα</a> &gt; <a href="users.php">Διαχείριση Χρηστών</a> &gt; Νέος Χρήστης
-    </div>
-</div>
+'.show_breacrumb($breadcrumb).'
 <div class="row">
 <div class="col-lg-6 col-md-8 col-sm-12 col-lg-offset-3 col-md-offset-2">
 <div class="box">';
@@ -22,29 +30,35 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
     $password_c=filter_var($_POST['password_c'], FILTER_SANITIZE_STRING);
 
     // Ελέγχω αν το username υπάρχει
-    $query="SELECT count(*) as user_counter FROM dk_users WHERE username='$username'";
-    $result=$mysqli->query($query);
-    $row=$result->fetch_assoc();
+    $stmt = $dbh->prepare('SELECT count(*) as user_counter FROM dk_users WHERE username = :username;');
+    $params = array(':username' => $username);
+    $stmt->execute($params);
+    $row=$stmt->fetch();
 
     // Ελέγχω αν το email υπάρχει
-    $query="SELECT count(*) as email_counter FROM dk_users WHERE email='$email'";
-    $result2=$mysqli->query($query);
-    $row2=$result2->fetch_assoc();
+    $stmt = $dbh->prepare('SELECT count(*) as email_counter FROM dk_users WHERE email = :email;');
+    $params = array(':email' => $email);
+    $stmt->execute($params);
+    $row2=$stmt->fetch();
 
     // Ελέγχω αν ο χρήστης συμπλήρωσε όλα τα πεδία
     if (empty($onoma) ||empty($epwnymo) || empty($email) || empty($username)) {
         echo "<div class='alert alert-danger'>Έχετε αφήσει κενά πεδία στην φόρμα.</div>";
     // Ελέγχω αν οι κωδικοί ταιριάζουν
-    }else if ($password!=$password_c) {
+    }
+    if ($password!=$password_c) {
         echo "<div class='alert alert-danger'>Οι κωδικοί δεν ταιρίαζουν.</div>";
     // ελέγχω αν έχει δοθεί έγγυρη διεύθυνση email
-    }else if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+    }
+    if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
         echo "<div class='alert alert-danger'>Το email δεν είναι έγκυρο.</div>";
     // ελέγχω για την μοναδικότητα του username
-    }else if ($row['user_counter']>0) {
+    }
+    if ($row->user_counter>0) {
         echo "<div class='alert alert-danger'>Το όνομα χρήστη χρησιμοποιείται ήδη.</div>";
     // ελέγχω για την μοναδικότητα του email
-    }else if ($row2['email_counter']>0) {
+    }
+    if ($row2->email_counter>0) {
         echo "<div class='alert alert-danger'>Το email χρησιμοποιείται.</div>";
     }
 }

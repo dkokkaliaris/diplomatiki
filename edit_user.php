@@ -1,5 +1,14 @@
 <?php
 include_once "includes/init.php";
+if (!is_logged_in()) {
+    header("Location: ".BASE_URL.'login.php');
+    exit;
+}else{
+    if($_SESSION['level']>=2){
+       header("Location: ".BASE_URL.'index.php');
+        die();
+    }
+}
 get_header();
 
 $id = $_GET['id'];
@@ -24,13 +33,12 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 $stmt = $dbh->prepare("SELECT * FROM dk_users where id = $id;");
 $stmt->execute();
 $user = $stmt->fetchObject();
-
+$breadcrumb=array(
+    array('title'=>'Διαχείριση Χρηστών','href'=>'users.php'),
+    array('title'=>'Επεξεργασία Χρηστών','href'=>''),
+);
 echo '<div class="container-fluid">
-    <div class="row breadcrumb">
-        <div class="col-sm-12">
-        <a href="index.php">Αρχική Σελίδα</a> &gt; <a href="users.php">Διαχείριση Χρηστών</a> &gt; Επεξεργασία Χρηστών
-        </div>
-    </div>
+    '.show_breacrumb($breadcrumb).'
     <div class="row">
         <div class="col-lg-6 col-md-8 col-sm-12 col-lg-offset-3 col-md-offset-2">
             <div class="box">

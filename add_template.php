@@ -1,13 +1,16 @@
 <?php
 include_once "includes/init.php";
+if (!is_logged_in()) {
+    header("Location: ".BASE_URL.'login.php');
+    exit;
+}
 get_header();
-
+$breadcrumb=array(
+    array('title'=>'Πρότυπα Ερωτηματολόγια','href'=>'templates.php'),
+    array('title'=>'Προσθήκη Νέου Πρότυπου Ερωτηματολογίου','href'=>''),
+);
 echo '<div class="container-fluid">
-<div class="row breadcrumb">
-    <div class="col-sm-12">
-    <a href="index.php">Αρχική Σελίδα</a> &gt; <a href="templates.php">Πρότυπα Ερωτηματολόγια</a> &gt; Προσθήκη Νέου Πρότυπου Ερωτηματολογίου
-    </div>
-</div>';
+'.show_breacrumb($breadcrumb);
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     if (!isset($_POST['title'], $_POST['description']) || ($_POST['title'] == '' || $_POST['description'] == '')) {

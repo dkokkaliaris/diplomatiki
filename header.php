@@ -27,6 +27,8 @@ echo '<html lang="el">
     <script src="'.BASE_URL.'js/jquery.datetimepicker.js"></script>
     <!-- jQuery UI -->
     <script src="'.BASE_URL.'js/jquery-ui.min.js"></script>
+    <!-- ChartJS -->
+    <script src="'.BASE_URL.'js/Chart.min.js"></script>
     <title>Questionnaire</title>
 </head>
 <body>
@@ -34,9 +36,9 @@ echo '<html lang="el">
         <div class="container">
             <div class="row">
                 <div class="cold-md-12">
-                    '.(isset($_SESSION['userid']) && $_SESSION['userid']
+                    '.(is_logged_in()
                         ?'<a href="'.BASE_URL.'logout.php" style="color: #FFFFFF">Έξοδος</a>'
-                        :'a href="'.BASE_URL.'login.php" style="color: #FFFFFF">Είσοδος</a>').'
+                        :'<a href="'.BASE_URL.'login.php" style="color: #FFFFFF">Είσοδος</a>').'
                 </div>
             </div>
         </div>

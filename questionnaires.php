@@ -1,5 +1,9 @@
 <?php
 include_once "includes/init.php";
+if (!is_logged_in()) {
+    header("Location: ".BASE_URL.'login.php');
+    exit;
+}
 get_header();
 
 if (isset($_GET['action']) && sanitize($_GET['action']) == "delete") {
@@ -22,23 +26,21 @@ if (isset($_GET['page'])) {
 $sortby = 'order by ';
 // για ταξινόμηση
 if (!empty($_REQUEST['sortby'])) {
-    $sortby .= $_REQUEST['sortby'];
+    $sortby .= sanitize($_REQUEST['sortby']);
 } else {
     $sortby .= "id";
 }
 
 if (!empty($_REQUEST['sorthow'])) {
-    $sorthow = $_REQUEST['sorthow'];
+    $sorthow = sanitize($_REQUEST['sorthow']);
 } else {
     $sorthow = "desc";
 }
 
-
-$sql = "SELECT count(*) FROM dk_questionnaire where template = 0 and user_id = " . $_SESSION['userid'] . ";";
-
-$result = $dbh->prepare($sql);
-$result->execute();
-$total_pages = $result->fetchColumn();
+$stmt = $dbh->prepare('SELECT count(*) FROM dk_questionnaire where template = 0 and user_id = :id ');
+$params = array(':id' => $_SESSION['userid']);
+$stmt->execute($params);
+$total_pages = $stmt->fetchColumn();
 
 
 /* Setup page vars for display. */
@@ -56,12 +58,11 @@ else
     $stmt = $dbh->prepare("SELECT * FROM dk_questionnaire where template = 0 $sortby $sorthow LIMIT $start,$limit;");
 $stmt->execute();
 $results = $stmt->fetchALL();
+$breadcrumb=array(
+    array('title'=>'Ερωτηματολόγια','href'=>'')
+);
 echo '<div class="container-fluid">
-    <div class="row breadcrumb">
-        <div class="col-sm-12">
-            <a href="index.php">Αρχική Σελίδα</a> &gt; Ερωτηματολόγια
-        </div>
-    </div>
+    '.show_breacrumb($breadcrumb).'
         <div class="row">
             <div class="col-sm-12">
                 <h3>Ερωτηματολόγια
@@ -93,46 +94,50 @@ echo '<div class="container-fluid">
                     <td>'.$result->title.'</td>
                     <td>';
                         // φέρνω το μάθημα του ερωτηματολογίου
-                        $stmt = $dbh->prepare("SELECT * FROM dk_questionnaire_lessons where questionnaire_id = $result->id");
-                        $stmt->execute();
+                        $stmt = $dbh->prepare("SELECT * FROM dk_questionnaire_lessons where questionnaire_id = :id");
+                        $params = array(':id' => $result->id);
+                        $stmt->execute($params);
                         $lessonQ = $stmt->fetchObject();
 
-                        $stmt = $dbh->prepare("SELECT * FROM dk_lessons where id = $lessonQ->lessons_id");
-                        $stmt->execute();
+                        $stmt = $dbh->prepare("SELECT * FROM dk_lessons where id = :id");
+                        $params = array(':id' => $lessonQ->lessons_id);
+                        $stmt->execute($params);
                         $lesson = $stmt->fetchObject();
 
                         echo $lesson->title;
                     echo '</td>
                     <td>';
-                        $sql = "SELECT count(*) FROM dk_questionnaire_questions WHERE questionnaire_id = $result->id";
-                        $rr = $dbh->prepare($sql);
-                        $rr->execute();
-                        echo $rr->fetchColumn();
+                        $stmt = $dbh->prepare("SELECT count(*) FROM dk_questionnaire_questions WHERE questionnaire_id = :id");
+                        $params = array(':id' => $result->id);
+                        $stmt->execute($params);
+                        echo $stmt->fetchColumn();
                     echo '</td>
                     <td>';
                         // φέρνω τον χρήστη που επεξεργάστηκε τελυταία φορά το ερωτηματολόγιο
-                        $stmt = $dbh->prepare("SELECT * FROM dk_users where id = $result->last_editor");
-                        $stmt->execute();
+                        $stmt = $dbh->prepare("SELECT * FROM dk_users where id = :id");
+                        $params = array(':id' => $result->last_editor);
+                        $stmt->execute($params);
                         $lastTimeEditor = $stmt->fetchObject();
                         echo $lastTimeEditor->username;
                     echo '</td>';
                     if ($_SESSION['level'] == 1 || $_SESSION['level'] == 2) {
                         echo '<td>';
                             // φέρνω τον χρήστη που ανήκει το ερωτηματολόγιο
-                            $stmt = $dbh->prepare("SELECT * FROM dk_users where id = $result->user_id");
-                            $stmt->execute();
+                            $stmt = $dbh->prepare("SELECT * FROM dk_users where id = :id");
+                            $params = array(':id' => $result->user_id);
+                            $stmt->execute($params);
                             $lastTimeEditor = $stmt->fetchObject();
                             echo $lastTimeEditor->username;
                            echo '</td>';
                     }
                     echo '<td>';
                         if ($result->template == 0)
-                            echo (new DateTime($result->time_begins))->format('d/m/Y H:i:s');
+                            echo (new DateTime($result->time_begins))->format('d/m/Y H:i');
                         else echo '-';
                     echo '</td>
                     <td>';
                         if ($result->template == 0)
-                            echo (new DateTime($result->time_ends))->format('d/m/Y H:i:s');
+                            echo (new DateTime($result->time_ends))->format('d/m/Y H:i');
                         else echo '-';
 
                     echo '</td>

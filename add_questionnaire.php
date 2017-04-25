@@ -1,13 +1,16 @@
 <?php
 include_once "includes/init.php";
+if (!is_logged_in()) {
+    header("Location: ".BASE_URL.'login.php');
+    exit;
+}
 get_header();
-
+$breadcrumb=array(
+    array('title'=>'Ερωτηματολόγια','href'=>'questionnaires.php'),
+    array('title'=>'Προσθήκη Νέου Ερωτηματολογίου','href'=>''),
+);
 echo '<div class="container-fluid">
-<div class="row breadcrumb">
-    <div class="col-sm-12">
-    <a href="index.php">Αρχική Σελίδα</a> &gt; <a href="questionnaires.php">Ερωτηματολόγια</a> &gt; Προσθήκη Νέου Ερωτηματολογίου
-    </div>
-</div>';
+'.show_breacrumb($breadcrumb);
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     // ελέγχω αν ο χρήστης έστειλε κενά πεδία
@@ -72,7 +75,7 @@ echo '<div class="row">
                         $results = $stmt->fetchALL();
                         foreach ($results as $result) {
                             // echo "<option value=\"$result->id\">$result->title</option>";
-                            echo "<option value='$result->id'>'$result->title'".
+                            echo "<option value='$result->id'>$result->title".
                                 (!empty($result->last_name)?$result->first_name .' '. $result->last_name:'').
                                 "</option>";
                         }

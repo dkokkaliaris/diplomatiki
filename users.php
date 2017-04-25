@@ -1,14 +1,25 @@
 <?php
 include_once "includes/init.php";
+if (!is_logged_in()) {
+    header("Location: ".BASE_URL.'login.php');
+    exit;
+}else{
+    if ($_SESSION['level']!=1) {
+        header("Location: ".BASE_URL.'index.php');
+        exit;
+    }
+}
 get_header();
 
-if ($_GET['del'] && $_GET['del']>0) {
-    $sql="DELETE FROM dk_users WHERE id=".$_GET['del'];
-    $mysqli->query($sql);
+if ($_GET['del'] && sanitize($_GET['del'])>0) {
+    $del = sanitize($_GET['del']);
+    $stmt = $dbh->prepare('DELETE FROM dk_users WHERE id = :id');
+    $params = array(':id' => $del);
+    $stmt->execute($params);
     echo "<div class='alert alert-success'>Η διαγραφή του χρήστη πραγματοποιήθηκε με επιτυχία.</div>";
 }
 
-if ($_GET['a'] && $_GET['a']>0) {
+if ($_GET['a'] && sanitize($_GET['a'])>0) {
     echo "<div class='alert alert-success'>Η αλλαγή των στοιχείων του χρήστη πραγματοποιήθηκε με επιτυχία.</div>";
 }
 
@@ -35,13 +46,13 @@ if (isset($_GET['page'])) {
 $sortby = 'order by ';
 // για ταξινόμηση
 if (!empty($_REQUEST['sortby'])) {
-    $sortby .= $_REQUEST['sortby'];
+    $sortby .= sanitize($_REQUEST['sortby']);
 } else {
     $sortby .= "id";
 }
 
 if (!empty($_REQUEST['sorthow'])) {
-    $sorthow = $_REQUEST['sorthow'];
+    $sorthow = sanitize($_REQUEST['sorthow']);
 } else {
     $sorthow = "desc";
 }
@@ -58,13 +69,11 @@ $next = $page + 1;                            //next page is page + 1
 $lastpage = ceil($total_pages / $limit);        //lastpage is = total pages / items per page, rounded up.
 $lpm1 = $lastpage - 1;*/
 $targetpage = "users.php";    //your file name  (the name of this file)
-
+$breadcrumb=array(
+    array('title'=>'Διαχείριση Χρηστών','href'=>'')
+);
 echo '<div class="container-fluid">
-    <div class="row breadcrumb">
-        <div class="col-sm-12">
-        <a href="index.php">Αρχική Σελίδα</a> &gt; Διαχείριση Χρηστών
-        </div>
-    </div>
+    '.show_breacrumb($breadcrumb).'
     <div class="row">
         <div class="col-sm-12">
             <h3>Διαχείριση Χρηστών
@@ -107,13 +116,13 @@ echo '<div class="container-fluid">
 
                     $addtosql = "";
 
-                    $onoma = isset($_REQUEST['first_name']) ? $_REQUEST['first_name'] : '';
-                    $epwnymo = isset($_REQUEST['last_name']) ? $_REQUEST['last_name'] : '';
-                    $aem = isset($_REQUEST['aem']) ? $_REQUEST['aem'] : '';
-                    $email = isset($_REQUEST['email']) ? $_REQUEST['email'] : '';
-                    $username = isset($_REQUEST['username']) ? $_REQUEST['username'] : '';
-                    $kinito = isset($_REQUEST['v']) ? $_REQUEST['telephone'] : '';
-                    $type = isset($_REQUEST['type']) ? $_REQUEST['type'] : '';
+                    $onoma = isset($_REQUEST['first_name']) ? filter_var($_REQUEST['first_name'], FILTER_SANITIZE_STRING) : '';
+                    $epwnymo = isset($_REQUEST['last_name']) ? filter_var($_REQUEST['last_name'], FILTER_SANITIZE_STRING) : '';
+                    $aem = isset($_REQUEST['aem']) ? filter_var($_REQUEST['aem'], FILTER_SANITIZE_STRING) : '';
+                    $email = isset($_REQUEST['email']) ? filter_var($_REQUEST['email'], FILTER_SANITIZE_EMAIL) : '';
+                    $username = isset($_REQUEST['username']) ? filter_var($_REQUEST['username'], FILTER_SANITIZE_STRING) : '';
+                    $kinito = isset($_REQUEST['v']) ? filter_var($_REQUEST['telephone'], FILTER_SANITIZE_STRING) : '';
+                    $type = isset($_REQUEST['type']) ? filter_var($_REQUEST['type'], FILTER_SANITIZE_STRING) : '';
 
                     if (!empty($onoma)) {
                         $addtosql .= " AND first_name LIKE '%$onoma%'";
@@ -141,6 +150,9 @@ echo '<div class="container-fluid">
                     $stmt = $dbh->prepare("SELECT * FROM dk_users WHERE 1 $addtosql $sortby $sorthow LIMIT $start,$limit");
                     $stmt->execute();
                     $users = $stmt->fetchAll();
+                    $stmt = $dbh->prepare('UPDATE dk_users SET type = :type where id = :id');
+            $params = array(':type' => $type, ':id' => $id);
+            $stmt->execute($params);
 
                     foreach ($users as $user) {
 

@@ -15,13 +15,13 @@ if (isset($_GET['page'])) {
 $sortby = 'order by ';
 // για ταξινόμηση
 if (!empty($_REQUEST['sortby'])) {
-    $sortby .= $_REQUEST['sortby'];
+    $sortby .= sanitize($_REQUEST['sortby']);
 } else {
     $sortby .= "dk_questionnaire.id";
 }
 
 if (!empty($_REQUEST['sorthow'])) {
-    $sorthow = $_REQUEST['sorthow'];
+    $sorthow = sanitize($_REQUEST['sorthow']);
 } else {
     $sorthow = "desc";
 }
@@ -46,13 +46,11 @@ $targetpage = "evaluation.php";    //your file name  (the name of this file)
 $stmt = $dbh->prepare("SELECT dk_questionnaire.* FROM dk_questionnaire join dk_questionnaire_channel on dk_questionnaire_channel.id_questionnaire =  dk_questionnaire.id where dk_questionnaire.time_begins < NOW() and dk_questionnaire.time_ends > NOW() and dk_questionnaire_channel.id_channel = 2 and dk_questionnaire.template = 0 GROUP by dk_questionnaire.id $sortby $sorthow LIMIT $start,$limit;");
 $stmt->execute();
 $results = $stmt->fetchALL();
-
+$breadcrumb=array(
+    array('title'=>'Μαθήματα','href'=>'')
+);
 echo '<div class="container-fluid">
-    <div class="row breadcrumb">
-        <div class="col-sm-12">
-            <a href="index.php">Αρχική Σελίδα</a> &gt; Μαθήματα
-        </div>
-    </div>
+    '.show_breacrumb($breadcrumb).'
     <div class="row">
         <div class="col-sm-12">
             <h3>Μαθήματα</h3>

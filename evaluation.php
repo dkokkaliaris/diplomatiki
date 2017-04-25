@@ -1,5 +1,14 @@
 <?php
 include_once "includes/init.php";
+if (!is_logged_in()) {
+    header("Location: ".BASE_URL.'login.php');
+    exit;
+}else{
+    if($_SESSION['level']>2){
+       header("Location: ".BASE_URL.'index.php');
+        die();
+    }
+}
 get_header();
 
 if (isset($_GET['action']) && sanitize($_GET['action']) == "delete") {
@@ -22,21 +31,20 @@ if (isset($_GET['page'])) {
 $sortby = 'order by ';
 // για ταξινόμηση
 if (!empty($_REQUEST['sortby'])) {
-    $sortby .= $_REQUEST['sortby'];
+    $sortby .= sanitize($_REQUEST['sortby']);
 } else {
     $sortby .= "dk_lessons.id";
 }
 
 if (!empty($_REQUEST['sorthow'])) {
-    $sorthow = $_REQUEST['sorthow'];
+    $sorthow = sanitize($_REQUEST['sorthow']);
 } else {
     $sorthow = "desc";
 }
 
 
-$sql = "SELECT count(*) FROM dk_lessons join dk_questionnaire_lessons on dk_questionnaire_lessons.lessons_id =  dk_lessons.id GROUP by dk_questionnaire_lessons.lessons_id;";
-$result = $dbh->prepare($sql);
-$result->execute();
+$stmt = $dbh->prepare( "SELECT count(*) FROM dk_lessons join dk_questionnaire_lessons on dk_questionnaire_lessons.lessons_id =  dk_lessons.id GROUP by dk_questionnaire_lessons.lessons_id;" );
+$stmt->execute();
 $total_pages = $result->fetchColumn();
 
 
@@ -48,17 +56,16 @@ $lastpage = ceil($total_pages / $limit);        //lastpage is = total pages / it
 $lpm1 = $lastpage - 1;*/
 $targetpage = "evaluation.php";    //your file name  (the name of this file)
 
+$breadcrumb=array(
+    array('title'=>'Αξιολόγηση Μαθημάτων','href'=>'')
+);
 
 // φέρνω όλα τα μαθήματα
 $stmt = $dbh->prepare("SELECT * FROM dk_lessons join dk_questionnaire_lessons on dk_questionnaire_lessons.lessons_id =  dk_lessons.id join dk_questionnaire on dk_questionnaire_lessons.questionnaire_id = dk_questionnaire.id where dk_questionnaire.time_begins < NOW() and dk_questionnaire.time_ends > NOW() GROUP by dk_questionnaire_lessons.lessons_id $sortby $sorthow LIMIT $start,$limit;");
 $stmt->execute();
 $results = $stmt->fetchALL();
 echo '<div class="container-fluid">
-    <div class="row breadcrumb">
-        <div class="col-sm-12">
-        <a href="index.php">Αρχική Σελίδα</a> &gt; Αξιολόγηση Μαθημάτων
-        </div>
-    </div>
+    '.show_breacrumb($breadcrumb).'
     <div class="row">
         <div class="col-sm-12">
             <h3>Αξιολόγηση Μαθημάτων</h3>
@@ -76,7 +83,7 @@ echo '<div class="container-fluid">
             <tbody>';
                 foreach ($results as $result) {
                     echo '<tr>
-                        <td'.$result->title.'</td>
+                        <td>'.$result->title.'</td>
                         <td><a href="evaluate_questionnaire.php?id='.$result->questionnaire_id.'">
                             <i class="fa fa-list-alt" style="color: darkgreen;" aria-hidden="true"></i></a>
                         </td>

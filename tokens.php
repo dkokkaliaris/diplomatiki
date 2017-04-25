@@ -1,10 +1,10 @@
 <?php
 include_once "includes/init.php";
-get_header();
-if (!$_SESSION['userid']) {
-    header("Location: login.php");
+if (!is_logged_in()) {
+    header("Location: ".BASE_URL.'login.php');
     exit;
 }
+get_header();
 
 if (isset($_GET['action']) && sanitize($_GET['action']) == "delete") {
     $id = sanitize($_GET['id']);
@@ -15,17 +15,16 @@ if (isset($_GET['action']) && sanitize($_GET['action']) == "delete") {
 
 
 // φέρνω όλα τα tokens ερωτηματολογίων
-$stmt = $dbh->prepare("SELECT * FROM dk_questionnaire join dk_tokens on dk_questionnaire.id = dk_tokens.questionnaire_id where dk_tokens.user_id = " . $_SESSION['userid'] . " group by dk_tokens.questionnaire_id;");
-$stmt->execute();
+$stmt = $dbh->prepare('SELECT * FROM dk_questionnaire join dk_tokens on dk_questionnaire.id = dk_tokens.questionnaire_id where dk_tokens.user_id = :id group by dk_tokens.questionnaire_id;');
+$params = array(':id' => $_SESSION['userid']);
+$stmt->execute($params);
 
 $results = $stmt->fetchALL();
-
+$breadcrumb=array(
+    array('title'=>'Διαχείριση Κωδικών Token','href'=>'')
+);
 echo '<div class="container-fluid">
-    <div class="row breadcrumb">
-        <div class="col-sm-12">
-        <a href="index.php">Αρχική Σελίδα</a> &gt; Διαχείριση Κωδικών Token
-        </div>
-    </div>
+    '.show_breacrumb($breadcrumb).'
     <div class="row">
         <div class="col-sm-12">
             <h3>Διαχείριση Κωδικών Token
