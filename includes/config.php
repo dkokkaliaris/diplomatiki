@@ -1,8 +1,6 @@
 <?php
-
 $localhost=array('127.0.0.1','::1');
 if(in_array($_SERVER['REMOTE_ADDR'], $localhost)){
-	// settings
 	define('BASE_URL', 'http://localhost/questionnaire/');
 	define('DBHOST', 'localhost');
 	define('DBUSER', 'root');
@@ -21,7 +19,6 @@ if(in_array($_SERVER['REMOTE_ADDR'], $localhost)){
 	define('DBPASS', 'user');
 	define('DBNAME', 'dk_questionnaire');
 }
-
 
 $pdo_options = array(PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_OBJ, PDO::ATTR_ERRMODE => PDO::ERRMODE_WARNING,PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4");
 
