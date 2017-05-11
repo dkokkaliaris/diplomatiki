@@ -9,8 +9,9 @@ if (!is_logged_in()) {
 // το action και το ID του και τρέχω το query.
 if (isset($_GET['action']) && sanitize($_GET['action']) == "delete") {
     $id = sanitize($_GET['id']);
-    $stmt = $dbh->prepare('DELETE FROM dk_lessons WHERE id = :id');
     $params = array(':id' => $id);
+    $sql = 'DELETE FROM dk_lessons WHERE id = :id';
+    $stmt = $dbh->prepare($sql);
     $stmt->execute($params);
 
     echo "<div class='alert alert-success'>Η διαγραφή του μαθήματος πραγματοποιήθηκε με επιτυχία.</div>";
@@ -40,8 +41,9 @@ if (!empty($_REQUEST['sorthow'])) {
     $sorthow = "desc";
 }
 
-$stmt = $dbh->prepare('SELECT count(*) FROM dk_lessons where user_id = :id');
 $params = array(':id' => $_SESSION['userid']);
+$sql = 'SELECT count(*) FROM dk_lessons where user_id = :id';
+$stmt = $dbh->prepare($sql);
 $stmt->execute($params);
 $total_pages = $stmt->fetchColumn();
 
@@ -56,9 +58,10 @@ $targetpage = "lessons.php";    //your file name  (the name of this file)
 
 // φέρνω όλα τα μαθήματα
 if ($_SESSION['level'] == 3)
-    $stmt = $dbh->prepare("SELECT * FROM dk_lessons where user_id = " . $_SESSION['userid'] . " $sortby $sorthow LIMIT $start,$limit;");
+    $ssql = "SELECT * FROM dk_lessons where user_id = " . $_SESSION['userid'] . " $sortby $sorthow LIMIT $start,$limit;";
 else
-    $stmt = $dbh->prepare("SELECT A.*,B.first_name,B.last_name FROM dk_lessons A JOIN dk_users B ON A.user_id=B.id  $sortby $sorthow LIMIT $start,$limit;");
+    $sql = "SELECT A.*,B.first_name,B.last_name FROM dk_lessons A JOIN dk_users B ON A.user_id=B.id  $sortby $sorthow LIMIT $start,$limit;";
+    $stmt = $dbh->prepare($sql);
     $stmt->execute();
     $results = $stmt->fetchALL();
 

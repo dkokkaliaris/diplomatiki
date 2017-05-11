@@ -13,8 +13,9 @@ get_header();
 
 if ($_GET['del'] && sanitize($_GET['del'])>0) {
     $del = sanitize($_GET['del']);
-    $stmt = $dbh->prepare('DELETE FROM dk_users WHERE id = :id');
     $params = array(':id' => $del);
+    $sql = 'DELETE FROM dk_users WHERE id = :id';
+    $stmt = $dbh->prepare($sql);
     $stmt->execute($params);
     echo "<div class='alert alert-success'>Η διαγραφή του χρήστη πραγματοποιήθηκε με επιτυχία.</div>";
 }
@@ -27,8 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $types = sanitize($_POST['types']);
     // αλλάζουμε τον τύπο για τον κάθε χρήστη
     foreach ($types as $id => $type) {
-        $stmt = $dbh->prepare('UPDATE dk_users SET type = :type where id = :id');
         $params = array(':type' => $type, ':id' => $id);
+        $sql = 'UPDATE dk_users SET type = :type where id = :id';
+        $stmt = $dbh->prepare($sql);
         $stmt->execute($params);
     }
 }

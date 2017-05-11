@@ -9,8 +9,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $password = sanitize($_POST['password']);
 
     //Έλεγχος στην DB αν υπάρχει κάποιος χρήστης με αυτά τα στοιχεία και επιβεβαιωμένο email.
-    $stmt = $dbh->prepare('SELECT * FROM dk_users WHERE username = :username AND password = :password ');
     $params = array(':username' => $username, ':password' => md5($password));
+    $sql = 'SELECT * FROM dk_users WHERE username = :username AND password = :password ';
+    $stmt = $dbh->prepare($sql);
     $stmt->execute($params);
 
     $user = $stmt->fetchObject();
@@ -60,7 +61,7 @@ echo '<br />
                         </form>
                     </div>
                     <div class="login-container hide" id="id-2"><br/>
-                        <p>Για να μεταβείτε στην σελίδα με χρήση των ιδρυματικών κωδικών, παρακαλούμε πατήστε <a href="anonymous_questionnaires.php">εδώ</a>.</p>
+                        <p>Για να μεταβείτε στην σελίδα με χρήση των ιδρυματικών κωδικών, παρακαλούμε πατήστε <a href="'.BASE_URL.'sso/home.php">εδώ</a>.</p>
                     </div>
                     <div class="login-container hide" id="id-3"><br/>
                         <p>Για να μεταβείτε στην σελίδα ανώνυμης αξιολόγησης, παρακαλούμε πατήστε <a href="anonymous_questionnaires.php">εδώ</a>.</p>

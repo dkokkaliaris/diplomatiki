@@ -8,8 +8,9 @@ get_header();
 
 if (isset($_GET['action']) && sanitize($_GET['action']) == "delete") {
     $id = sanitize($_GET['id']);
-    $stmt = $dbh->prepare('DELETE FROM dk_questionnaire WHERE id = :id');
     $params = array(':id' => $id);
+    $sql = 'DELETE FROM dk_questionnaire WHERE id = :id';
+    $stmt = $dbh->prepare($sql);
     $stmt->execute($params);
 }
 
@@ -37,8 +38,9 @@ if (!empty($_REQUEST['sorthow'])) {
     $sorthow = "desc";
 }
 
-$stmt = $dbh->prepare('SELECT count(*) FROM dk_questionnaire where template = 0 and user_id = :id ');
 $params = array(':id' => $_SESSION['userid']);
+$sql = 'SELECT count(*) FROM dk_questionnaire where template = 0 and user_id = :id ';
+$stmt = $dbh->prepare($sql);
 $stmt->execute($params);
 $total_pages = $stmt->fetchColumn();
 
@@ -52,11 +54,14 @@ $lpm1 = $lastpage - 1;
 $targetpage = "questionnaires.php";    //your file name  (the name of this file)
 
 // φέρνω όλα τα ερωτηματολόγια
-if ($_SESSION['level'] == 3)
-    $stmt = $dbh->prepare("SELECT * FROM dk_questionnaire where template = 0 and user_id = " . $_SESSION['userid'] . " and (lockedtime is null or lockedtime < NOW()) $sortby $sorthow LIMIT $start,$limit;");
-else
-    $stmt = $dbh->prepare("SELECT * FROM dk_questionnaire where template = 0 $sortby $sorthow LIMIT $start,$limit;");
-$stmt->execute();
+$params = array();
+if ($_SESSION['level'] == 3){
+    $params = array(':id' => $_SESSION['userid'] );
+    $sql = "SELECT * FROM dk_questionnaire where template = 0 and user_id = :id and (lockedtime is null or lockedtime < NOW()) $sortby $sorthow LIMIT $start,$limit;";
+}else
+    $sql = "SELECT * FROM dk_questionnaire where template = 0 $sortby $sorthow LIMIT $start,$limit;";
+$stmt = $dbh->prepare($sql);
+$stmt->execute($params);
 $results = $stmt->fetchALL();
 $breadcrumb=array(
     array('title'=>'Ερωτηματολόγια','href'=>'')
@@ -94,28 +99,32 @@ echo '<div class="container-fluid">
                     <td>'.$result->title.'</td>
                     <td>';
                         // φέρνω το μάθημα του ερωτηματολογίου
-                        $stmt = $dbh->prepare("SELECT * FROM dk_questionnaire_lessons where questionnaire_id = :id");
                         $params = array(':id' => $result->id);
+                        $sql = "SELECT * FROM dk_questionnaire_lessons where questionnaire_id = :id";
+                        $stmt = $dbh->prepare($sql);
                         $stmt->execute($params);
                         $lessonQ = $stmt->fetchObject();
 
-                        $stmt = $dbh->prepare("SELECT * FROM dk_lessons where id = :id");
                         $params = array(':id' => $lessonQ->lessons_id);
+                        $sql = "SELECT * FROM dk_lessons where id = :id";
+                        $stmt = $dbh->prepare($sql);
                         $stmt->execute($params);
                         $lesson = $stmt->fetchObject();
 
                         echo $lesson->title;
                     echo '</td>
                     <td>';
-                        $stmt = $dbh->prepare("SELECT count(*) FROM dk_questionnaire_questions WHERE questionnaire_id = :id");
                         $params = array(':id' => $result->id);
+                        $sql = "SELECT count(*) FROM dk_questionnaire_questions WHERE questionnaire_id = :id";
+                        $stmt = $dbh->prepare($sql);
                         $stmt->execute($params);
                         echo $stmt->fetchColumn();
                     echo '</td>
                     <td>';
                         // φέρνω τον χρήστη που επεξεργάστηκε τελυταία φορά το ερωτηματολόγιο
-                        $stmt = $dbh->prepare("SELECT * FROM dk_users where id = :id");
                         $params = array(':id' => $result->last_editor);
+                        $sql = "SELECT * FROM dk_users where id = :id";
+                        $stmt = $dbh->prepare($sql);
                         $stmt->execute($params);
                         $lastTimeEditor = $stmt->fetchObject();
                         echo $lastTimeEditor->username;
@@ -123,8 +132,9 @@ echo '<div class="container-fluid">
                     if ($_SESSION['level'] == 1 || $_SESSION['level'] == 2) {
                         echo '<td>';
                             // φέρνω τον χρήστη που ανήκει το ερωτηματολόγιο
-                            $stmt = $dbh->prepare("SELECT * FROM dk_users where id = :id");
                             $params = array(':id' => $result->user_id);
+                            $sql = "SELECT * FROM dk_users where id = :id";
+                            $stmt = $dbh->prepare($sql);
                             $stmt->execute($params);
                             $lastTimeEditor = $stmt->fetchObject();
                             echo $lastTimeEditor->username;

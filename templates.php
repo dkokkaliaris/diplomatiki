@@ -8,11 +8,14 @@ get_header();
 
 if (isset($_GET['action']) && sanitize($_GET['action']) == "delete") {
     $id = sanitize($_GET['id']);
-    $stmt = $dbh->prepare('DELETE FROM dk_questionnaire_channel WHERE id_questionnaire = :id');
     $params=array(':id'=> $id);
+    $sql = 'DELETE FROM dk_questionnaire_channel WHERE id_questionnaire = :id';
+    $stmt = $dbh->prepare($sql);
     $stmt->execute($params);//διαγραφουμε πρωτα από τον πίνακα dk_questionnaire_channel, διότι υπάρχει foreign key
-    $stmt = $dbh->prepare('DELETE FROM dk_questionnaire WHERE id = :id');
+
     $params = array(':id' => $id);
+    $sql = 'DELETE FROM dk_questionnaire WHERE id = :id';
+    $stmt = $dbh->prepare($sql);
     $stmt->execute($params);
 }
 
@@ -41,8 +44,9 @@ if (!empty($_REQUEST['sorthow'])) {
 }
 
 
-$stmt = $dbh->prepare('SELECT count(*) FROM dk_questionnaire where template = 1 and user_id = :id');
 $params=array(':id'=> $_SESSION['userid']);
+$sql = 'SELECT count(*) FROM dk_questionnaire where template = 1 and user_id = :id';
+$stmt = $dbh->prepare($sql);
 $stmt->execute($params);
 $total_pages = $stmt->fetchColumn();
 
@@ -56,10 +60,13 @@ $lpm1 = $lastpage - 1;*/
 $targetpage = "templates.php";    //your file name  (the name of this file)
 
 // φέρνω όλα τα Templates
-if ($_SESSION['level'] == 3)
-    $stmt = $dbh->prepare("SELECT * FROM dk_questionnaire where template = 1 and user_id = " . $_SESSION['userid'] . " and (lockedtime is null or lockedtime < NOW()) $sortby $sorthow LIMIT $start,$limit;");
-else
+$params=array();
+if ($_SESSION['level'] == 3){
+    $params=array(':id'=> $_SESSION['userid']);
+    $stmt = $dbh->prepare("SELECT * FROM dk_questionnaire where template = 1 and user_id = :id and (lockedtime is null or lockedtime < NOW()) $sortby $sorthow LIMIT $start,$limit;");
+}else
     $stmt = $dbh->prepare("SELECT * FROM dk_questionnaire where template = 1 $sortby $sorthow LIMIT $start,$limit;");
+$stmt = $dbh->prepare($sql);
 $stmt->execute();
 $stmt->execute();
 $results = $stmt->fetchALL();

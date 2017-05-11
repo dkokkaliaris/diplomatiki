@@ -20,8 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $description = sanitize($_POST['description']);
 
         // Δημιουργούμε το template
-        $stmt = $dbh->prepare('INSERT INTO dk_questionnaire (title, description, template, user_id, last_edit_time, last_editor) VALUES (:title, :description, :template, :user_id, :last_edit_time, :last_editor)');
         $params = array(':title' => $title, ':description' => $description, ':template' => 1, ':user_id' => $_SESSION['userid'], ':last_edit_time' => date('Y-m-d H:i:s'), ':last_editor' => $_SESSION['userid']);
+        $sql = 'INSERT INTO dk_questionnaire (title, description, template, user_id, last_edit_time, last_editor) VALUES (:title, :description, :template, :user_id, :last_edit_time, :last_editor)';
+        $stmt = $dbh->prepare($sql);
         $stmt->execute($params);
 
         // Η βάση μας γνωστοποιεί το ID του ερωτηματολογίου που μόλις δημιούργησε και το αποθηκευύομε.
@@ -29,8 +30,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
         if ($new_id > 0) {
             foreach ($_POST['channel'] as $channel) {
-                $stmt = $dbh->prepare('INSERT INTO dk_questionnaire_channel (id_questionnaire, id_channel) VALUES (:id_questionnaire, :id_channel)');
                 $params = array(':id_questionnaire' => $new_id, ':id_channel' => $channel);
+                $sql = 'INSERT INTO dk_questionnaire_channel (id_questionnaire, id_channel) VALUES (:id_questionnaire, :id_channel)';
+                $stmt = $dbh->prepare($sql);
                 $stmt->execute($params);
             }
             header("Location: edit_template.php?id=$new_id");
@@ -60,7 +62,8 @@ echo '<div class="row">
                     </div>';
 
                     // Φέρουμε την λίστα με τα κανάλια
-                    $stmt = $dbh->prepare('SELECT * FROM dk_channel');
+                    $sql = 'SELECT * FROM dk_channel';
+                    $stmt = $dbh->prepare($sql);
                     $stmt->execute();
                     $results = $stmt->fetchAll();
                     $total = $stmt->rowCount();

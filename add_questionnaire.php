@@ -24,9 +24,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $lesson = sanitize($_POST['lesson']);
 
         // Δημιουργούμε το ερωτηματολόγιο
-        $stmt = $dbh->prepare('INSERT INTO dk_questionnaire (title, description, time_begins, time_ends, template, user_id, lesson_id, last_edit_time, last_editor) VALUES (:title, :description, :time_begins, :time_ends, :template, :user_id, :lesson_id, :last_edit_time, :last_editor)');
-        //$params = array(':title' => $title, ':description' => $description, ':time_begins' => date('Y-m-d H:i', strtotime(str_replace('/', '-', $date_begins))), ':time_ends' => date('Y-m-d H:i', strtotime(str_replace('/', '-', $date_ends))), ':template' => 0, ':user_id' => $_SESSION['userid'], ':lesson_id' => $lesson, ':last_edit_time' => date('Y-m-d H:i:s'), ':last_editor' => $_SESSION['userid']);
         $params = array(':title' => $title, ':description' => $description, ':time_begins' => $date_begins, ':time_ends' => $date_ends, ':template' => 0, ':user_id' => $_SESSION['userid'], ':lesson_id' => $lesson, ':last_edit_time' => date('Y-m-d H:i:s'), ':last_editor' => $_SESSION['userid']);
+        $sql = 'INSERT INTO dk_questionnaire (title, description, time_begins, time_ends, template, user_id, lesson_id, last_edit_time, last_editor) VALUES (:title, :description, :time_begins, :time_ends, :template, :user_id, :lesson_id, :last_edit_time, :last_editor)';
+        $stmt = $dbh->prepare($sql);
+        //$params = array(':title' => $title, ':description' => $description, ':time_begins' => date('Y-m-d H:i', strtotime(str_replace('/', '-', $date_begins))), ':time_ends' => date('Y-m-d H:i', strtotime(str_replace('/', '-', $date_ends))), ':template' => 0, ':user_id' => $_SESSION['userid'], ':lesson_id' => $lesson, ':last_edit_time' => date('Y-m-d H:i:s'), ':last_editor' => $_SESSION['userid']);
+
         $stmt->execute($params);
 
         // Η βάση μας γνωστοποιεί το ID του ερωτηματολογίου που μόλις δημιούργησε και το αποθηκευύομε.
@@ -34,8 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         if ($new_id > 0) {
             // Εφόσον δημιουργηθεί το ερωτηματολόγιο βάζω τα κανάλια στον πίνακα (σύνδεση 1 προς πολλά)
             foreach ($_POST['channel'] as $channel) {
-                $stmt = $dbh->prepare('INSERT INTO dk_questionnaire_channel (id_questionnaire, id_channel) VALUES (:id_questionnaire, :id_channel)');
                 $params = array(':id_questionnaire' => $new_id, ':id_channel' => $channel);
+                $sql = 'INSERT INTO dk_questionnaire_channel (id_questionnaire, id_channel) VALUES (:id_questionnaire, :id_channel)';
+                $stmt = $dbh->prepare($sql);
                 $stmt->execute($params);
             }
             header("Location: edit_questionnaire.php?id=$new_id");
@@ -64,13 +67,16 @@ echo '<div class="row">
                     <select name="lesson" id="lesson"
                             class="form-control type" style="width: auto;">
                         <option value="0">Επιλογή Μαθήματος</option>';
-
-                        if ($_SESSION['level'] == 3)
-                            $stmt = $dbh->prepare("SELECT * FROM dk_lessons where user_id = " . $_SESSION['userid']);
-                        else
+                        $params = array();
+                        if ($_SESSION['level'] == 3){
+                            $params= array(':id' => $_SESSION['userid']);
+                            $sql = 'SELECT * FROM dk_lessons where user_id = :id';
+                        }else
                             // αν ειμαι διαχειριστής ή ΟΜΕΑ φέρνω όλα τα μαθήματα με το όνομα του διδάσκοντα
                             $stmt = $dbh->prepare('SELECT dk_lessons.id,dk_lessons.title,dk_users.first_name,dk_users.last_name FROM dk_lessons JOIN dk_users ON dk_users.id=dk_lessons.user_id');
-                        $stmt->execute();
+
+                        $stmt = $dbh->prepare($sql);
+                        $stmt->execute($params);;
 
                         $results = $stmt->fetchALL();
                         foreach ($results as $result) {
@@ -100,7 +106,8 @@ echo '<div class="row">
 
 
                 // Φέρουμε την λίστα με τα κανάλια
-                $stmt = $dbh->prepare('SELECT * FROM dk_channel');
+                $sql = 'SELECT * FROM dk_channel';
+                $stmt = $dbh->prepare($sql);
                 $stmt->execute();
                 $results = $stmt->fetchAll();
                 $total = $stmt->rowCount();

@@ -35,7 +35,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $max_token = 6;
 
         // φέρνω όλα τα tokens
-        $stmt = $dbh->prepare("SELECT * FROM dk_tokens;");
+        $sql = "SELECT * FROM dk_tokens;";
+        $stmt = $dbh->prepare($sql);
         $stmt->execute();
         $results = $stmt->fetchALL();
 
@@ -53,8 +54,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 $randomNum = randomPassword($max_token);
             }
 
-            $stmt = $dbh->prepare('INSERT INTO dk_tokens (user_id, questionnaire_id, seira, token_code, from_date, to_date, used) VALUES(:user_id, :questionnaire_id, :seira, :token, :from_date, :to_date, :used);');
             $params = array(':user_id' => $_SESSION['userid'], ':questionnaire_id' => $questionnaire, ':seira' => $randomSeries, ':token' => $randomNum, ':from_date' => date('Y-m-d H:i', strtotime(str_replace('/', '-', $begin))), ':to_date' => date('Y-m-d H:i', strtotime(str_replace('/', '-', $end))), ':used' => 0);
+            $sql = 'INSERT INTO dk_tokens (user_id, questionnaire_id, seira, token_code, from_date, to_date, used) VALUES(:user_id, :questionnaire_id, :seira, :token, :from_date, :to_date, :used);';
+            $stmt = $dbh->prepare($sql);
             $stmt->execute($params);
 
             // το καταχωρούμε στον πίνακα

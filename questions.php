@@ -10,11 +10,13 @@ get_header();
 if ($_SERVER['REQUEST_METHOD']=="GET") {
     if(sanitize($_GET['action'])=="delete"){
         $id = sanitize($_GET['id']);
-        $stmt = $dbh->prepare('DELETE FROM dk_questionnaire_channel WHERE id_questionnaire = :id');
         $params=array(':id'=> $id);
+        $sql = 'DELETE FROM dk_questionnaire_channel WHERE id_questionnaire = :id';
+        $stmt = $dbh->prepare($sql);
         $stmt->execute($params);//διαγραφουμε πρωτα από τον πίνακα dk_questionnaire_channel, διότι υπάρχει foreign key
-        $stmt = $dbh->prepare('DELETE FROM dk_questionnaire WHERE id = :id');
         $params=array(':id'=> $id);
+        $sql = 'DELETE FROM dk_questionnaire WHERE id = :id';
+        $stmt = $dbh->prepare($sql);
         $stmt->execute($params);
     }
 }
@@ -42,7 +44,8 @@ echo '<div class="container-fluid">
                 </tr>
             </thead>
             <tbody>';
-                $stmt = $dbh->prepare('SELECT * FROM dk_questionnaire');
+                $sql = 'SELECT * FROM dk_questionnaire';
+                $stmt = $dbh->prepare($sql);
                 $stmt->execute();
                 $results =$stmt->fetchALL();
                 foreach($results as $result){

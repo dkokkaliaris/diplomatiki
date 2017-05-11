@@ -31,24 +31,21 @@ if (!empty($_REQUEST['sorthow'])) {
 }
 
 
-$stmt = $dbh->prepare('SELECT count(*) FROM dk_questionnaire join dk_answers on dk_questionnaire.id = dk_answers.questionnaire_id where template = 0 and dk_questionnaire.user_id = :id group by dk_questionnaire.id');
 $params = array(':id' => $_SESSION['userid']);
+$sql = 'SELECT count(*) FROM dk_questionnaire join dk_answers on dk_questionnaire.id = dk_answers.questionnaire_id where template = 0 and dk_questionnaire.user_id = :id group by dk_questionnaire.id';
+$stmt = $dbh->prepare($sql);
 $stmt->execute($params);
-//$total_pages = $result->fetchColumn();
 
-/* Setup page vars for display. */
-/*if ($page == 0) $page = 1;                    //if no page var is given, default to 1.
-$prev = $page - 1;                            //previous page is page - 1
-$next = $page + 1;                            //next page is page + 1
-$lastpage = ceil($total_pages / $limit);        //lastpage is = total pages / items per page, rounded up.
-$lpm1 = $lastpage - 1;*/
 $targetpage = "questionnaires.php";    //your file name  (the name of this file)
 
 // φέρνω όλα τα ερωτηματολόγια που έχουν απαντηθεί και δεν είναι κλειδωμένα
-$stmt = $dbh->prepare("SELECT dk_questionnaire.*, dk_answers.type FROM dk_questionnaire join dk_answers on dk_questionnaire.id = dk_answers.questionnaire_id where template = 0 and dk_questionnaire.user_id = " . $_SESSION['userid'] . " and (dk_questionnaire.lockedtime is null or dk_questionnaire.lockedtime < NOW()) group by dk_questionnaire.id $sortby $sorthow  LIMIT $start,$limit;");
-$stmt->execute();
+$params = array(':id' => $_SESSION['userid']);
+$sql = "SELECT dk_questionnaire.*, dk_answers.type FROM dk_questionnaire join dk_answers on dk_questionnaire.id = dk_answers.questionnaire_id where template = 0 and dk_questionnaire.user_id = " . $_SESSION['userid'] . " and (dk_questionnaire.lockedtime is null or dk_questionnaire.lockedtime < NOW()) group by dk_questionnaire.id $sortby $sorthow  LIMIT $start,$limit;";
+$stmt = $dbh->prepare($sql);
+$stmt->execute($params);
 $results = $stmt->fetchALL();
 $total_pages = $stmt->fetchColumn();
+
 $breadcrumb=array(
     array('title'=>'Αποτελέσματα Αξιολογήσεων ανά Ερωτηματολόγιο','href'=>'')
 );
@@ -80,13 +77,15 @@ echo '<div class="container-fluid">
                     <td>'.$result->title.'</td>
                     <td>';
                         // φέρνω το μάθημα του ερωτηματολογίου
-                        $stmt = $dbh->prepare("SELECT * FROM dk_questionnaire_lessons where questionnaire_id = :id");
                         $params = array(':id' => $result->id);
+                        $sql = "SELECT * FROM dk_questionnaire_lessons where questionnaire_id = :id";
+                        $stmt = $dbh->prepare($sql);
                         $stmt->execute($params);
                         $lessonQ = $stmt->fetchObject();
 
-                        $stmt = $dbh->prepare("SELECT * FROM dk_lessons where id = :id");
                         $params = array(':id' => $lessonQ->lessons_id);
+                        $sql = "SELECT * FROM dk_lessons where id = :id";
+                        $stmt = $dbh->prepare($sql);
                         $stmt->execute($params);
                         $lesson = $stmt->fetchObject();
 

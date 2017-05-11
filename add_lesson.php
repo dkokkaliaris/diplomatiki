@@ -32,8 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         }
 
         // Δημιουργούμε το μάθημα
-        $stmt = $dbh->prepare('INSERT INTO dk_lessons (title, user_id) VALUES (:title, :user_id)');
         $params = array(':title' => $title, ':user_id' => $userId);
+        $sql = 'INSERT INTO dk_lessons (title, user_id) VALUES (:title, :user_id)';
+        $stmt = $dbh->prepare($sql);
         $stmt->execute($params);
 
         // Η βάση μας γνωστοποιεί το ID του ερωτηματολογίου που μόλις δημιούργησε και το αποθηκευύομε.

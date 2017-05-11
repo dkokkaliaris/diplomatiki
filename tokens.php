@@ -8,17 +8,18 @@ get_header();
 
 if (isset($_GET['action']) && sanitize($_GET['action']) == "delete") {
     $id = sanitize($_GET['id']);
-    $stmt = $dbh->prepare('DELETE FROM dk_tokens WHERE id = :id');
     $params = array(':id' => $id);
+    $sql = 'DELETE FROM dk_tokens WHERE id = :id';
+    $stmt = $dbh->prepare($sql);
     $stmt->execute($params);
 }
 
 
 // φέρνω όλα τα tokens ερωτηματολογίων
-$stmt = $dbh->prepare('SELECT * FROM dk_questionnaire join dk_tokens on dk_questionnaire.id = dk_tokens.questionnaire_id where dk_tokens.user_id = :id group by dk_tokens.questionnaire_id;');
 $params = array(':id' => $_SESSION['userid']);
+$sql = 'SELECT * FROM dk_questionnaire join dk_tokens on dk_questionnaire.id = dk_tokens.questionnaire_id where dk_tokens.user_id = :id group by dk_tokens.questionnaire_id;';
+$stmt = $dbh->prepare($sql);
 $stmt->execute($params);
-
 $results = $stmt->fetchALL();
 $breadcrumb=array(
     array('title'=>'Διαχείριση Κωδικών Token','href'=>'')
