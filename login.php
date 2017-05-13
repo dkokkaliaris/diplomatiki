@@ -9,9 +9,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $password = sanitize($_POST['password']);
 
     //Έλεγχος στην DB αν υπάρχει κάποιος χρήστης με αυτά τα στοιχεία και επιβεβαιωμένο email.
+    $stmt = $dbh->prepare('SELECT * FROM dk_users WHERE username = :username AND password = :password ');
     $params = array(':username' => $username, ':password' => md5($password));
-    $sql = 'SELECT * FROM dk_users WHERE username = :username AND password = :password ';
-    $stmt = $dbh->prepare($sql);
     $stmt->execute($params);
 
     $user = $stmt->fetchObject();
@@ -33,21 +32,21 @@ echo '<br />
 <br />
         <div class="row">
              <div class="col-lg-6 col-md-8 col-sm-12 col-lg-offset-3 col-md-offset-2">
-                <div class="box fixed-height">
+                <div class="box absolute-height">
                     <div class="form-group">
                         <h3>Είσοδος</h3>
                         <label class="form-control-label" for="login-selection"></label>
                         <select id="login-selection" class="form-control type">
-                            <option value="id-1" selected="">Σύνδεση μέσω του λογαριασμού στο arch.icte.uowm.gr</option>
-                            <option value="id-2">Σύνδεση μέσω του ιδρυματικού λογαριασμού (Χρήση SSO)</option>
-                            <option value="id-3">Σύνδεση για Ανώνυμη Αξιολόγηση</option>
-                            <option value="id-4">Σύνδεση με χρήση κωδικού Token</option>
-                            <option value="id-5">Σύνδεση μέσω Εφαρμογής API</option>
+                            <option value="id-1" selected="">Είσοδος στο σύστημα με χρήση των κωδικών του arch.icte.uowm.gr</option>
+                            <option value="id-2">Είσοδος στο σύστημα με χρήση των ιδρυματικών κωδικών</option>
+                            <option value="id-3">Είσοδος στο σύστημα για υποβολή ανώνυμων αξιολογήσεων</option>
+                            <option value="id-4">Είσοδος στο σύστημα με χρήση μοναδικού κωδικού Token</option>
+                            <option value="id-5">Είσοδος στο σύστημα μέσω εφαρμογής API</option>
                         </select>
                     </div>
-                    <div class="login-container" id="id-1">
-                        <br/>
-                        <p>Παρακαλούμε συμπληρώστε στα παρακάτω πεδία της φόρμας τους κωδικούς που διαθέτετε στο πληροφοριακό σύστημα του εργαστηρίου ψηφιακών συστημάτων και αρχιτεκτονικής υπολογιστών (arch.icte.uowm.gr).</p>
+                    <div class="login-container" id="id-1"><br/>
+						<h5>Είσοδος στο σύστημα με χρήση των κωδικών του arch.icte.uowm.gr</h5>
+                        <p>Για να συνδεθείτε στο πληροφοριακό σύστημα αξιολόγησης σεμιναρίων και μαθημάτων χρησιμοποιώντας τους κωδικούς από το εργαστήριο ψηφιακών συστημάτων και αρχιτεκτονικής υπολογιστών (arch.icte.uowm.gr), παρακαλούμε συμπληρώστε τα αντίστοιχα πεδία στην παρακάτω φόρμα.</p>
                         <p class="profile-name-card"></p>
                         <form class="form-signin" action="" method="post">
                             <span class="reauth-email"></span>
@@ -61,13 +60,16 @@ echo '<br />
                         </form>
                     </div>
                     <div class="login-container hide" id="id-2"><br/>
-                        <p>Για να μεταβείτε στην σελίδα με χρήση των ιδρυματικών κωδικών, παρακαλούμε πατήστε <a href="'.BASE_URL.'sso/home.php">εδώ</a>.</p>
+						<h5>Είσοδος στο σύστημα με χρήση των ιδρυματικών κωδικών</h5>
+                        <p>Για να συνδεθείτε στο πληροφοριακό σύστημα αξιολόγησης σεμιναρίων και μαθημάτων χρησιμοποιώντας τους ιδρυματικούς κωδικούς σας, παρακαλούμε πατήστε <a href="anonymous_questionnaires.php">εδώ</a>.</p>
                     </div>
                     <div class="login-container hide" id="id-3"><br/>
-                        <p>Για να μεταβείτε στην σελίδα ανώνυμης αξιολόγησης, παρακαλούμε πατήστε <a href="anonymous_questionnaires.php">εδώ</a>.</p>
+						<h5>Είσοδος στο σύστημα για υποβολή ανώνυμων αξιολογήσεων</h5>
+                        <p>Για να συνδεθείτε στο πληροφοριακό σύστημα αξιολόγησης σεμιναρίων και μαθημάτων για υποβολή ανώνυμων αξιολογήσεων, παρακαλούμε πατήστε <a href="anonymous_questionnaires.php">εδώ</a>.</p>
                     </div>
                     <div class="login-container hide" id="id-4"><br/>
-                        <p>Παρακαλούμε συμπληρώστε στο παρακάτω πεδίο της φόρμας τον μοναδικό κωδικό token που λάβατε από τον υπεύθυνο του εκπαιδευτικού προγράμματος που θέλετε να αξιολογήσετε.</p>
+						<h5>Είσοδος στο σύστημα με χρήση μοναδικού κωδικού Token</h5>
+                        <p>Για να συνδεθείτε στο πληροφοριακό σύστημα αξιολόγησης σεμιναρίων και μαθημάτων χρησιμοποιώντας τον μοναδικό κωδικό Token που λάβατε από τον υπεύθυνο του εκπαιδευτικού προγράμματος, παρακαλούμε συμπληρώστε στο παρακάτω πεδίο της φόρμας.</p>
                         <form action="find_questionnaire_fromtoken.php" method="post">
                             <div class="form-group">
                                 <input class="form-control" placeholder="Κωδικός Token" name="token" type="text">
@@ -76,8 +78,8 @@ echo '<br />
                         </form>
                     </div>
                     <div class="login-container hide" id="id-5"><br/>
-                        <h5>Σύνδεση μέσω Εφαρμογής API</h5>
-                        <p>Για να μεταβείτε στην σελίδα αξιολόγησης με χρήση API, παρακαλούμε πατήστε <a href="anonymous_questionnaires.php">εδώ</a>.</p>
+                        <h5>Είσοδος στο σύστημα μέσω εφαρμογής API</h5>
+                        <p>Για να συνδεθείτε στο πληροφοριακό σύστημα αξιολόγησης σεμιναρίων και μαθημάτων με χρήση API, παρακαλούμε πατήστε <a href="anonymous_questionnaires.php">εδώ</a>.</p>
                     </div>
                 </div>
             </div>
