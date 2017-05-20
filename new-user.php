@@ -30,16 +30,14 @@ if ($_SERVER['REQUEST_METHOD']=="POST") {
     $password_c=filter_var($_POST['password_c'], FILTER_SANITIZE_STRING);
 
     // Ελέγχω αν το username υπάρχει
+    $stmt = $dbh->prepare('SELECT count(*) as user_counter FROM dk_users WHERE username = :username;');
     $params = array(':username' => $username);
-    $sql = 'SELECT count(*) as user_counter FROM dk_users WHERE username = :username;';
-    $stmt = $dbh->prepare($sql);
     $stmt->execute($params);
     $row=$stmt->fetch();
 
     // Ελέγχω αν το email υπάρχει
+    $stmt = $dbh->prepare('SELECT count(*) as email_counter FROM dk_users WHERE email = :email;');
     $params = array(':email' => $email);
-    $sql = 'SELECT count(*) as email_counter FROM dk_users WHERE email = :email;';
-    $stmt = $dbh->prepare($sql);
     $stmt->execute($params);
     $row2=$stmt->fetch();
 

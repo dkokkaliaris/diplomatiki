@@ -50,13 +50,6 @@ $stmt = $dbh->prepare($sql);
 $stmt->execute($params);
 $total_pages = $stmt->fetchColumn();
 
-
-/* Setup page vars for display. */
-/*if ($page == 0) $page = 1;                    //if no page var is given, default to 1.
-$prev = $page - 1;                            //previous page is page - 1
-$next = $page + 1;                            //next page is page + 1
-$lastpage = ceil($total_pages / $limit);        //lastpage is = total pages / items per page, rounded up.
-$lpm1 = $lastpage - 1;*/
 $targetpage = "templates.php";    //your file name  (the name of this file)
 
 // φέρνω όλα τα Templates
@@ -64,21 +57,22 @@ $params=array();
 if ($_SESSION['level'] == 3){
     $params=array(':id'=> $_SESSION['userid']);
     $stmt = $dbh->prepare("SELECT * FROM dk_questionnaire where template = 1 and user_id = :id and (lockedtime is null or lockedtime < NOW()) $sortby $sorthow LIMIT $start,$limit;");
-}else
-    $stmt = $dbh->prepare("SELECT * FROM dk_questionnaire where template = 1 $sortby $sorthow LIMIT $start,$limit;");
-$stmt = $dbh->prepare($sql);
-$stmt->execute();
-$stmt->execute();
-$results = $stmt->fetchALL();
-$breadcrumb=array(
+} else {
+	$stmt = $dbh->prepare("SELECT * FROM dk_questionnaire where template = 1 $sortby $sorthow LIMIT $start,$limit;");
+	$stmt = $dbh->prepare($sql);
+	$stmt->execute();
+	$stmt->execute();
+	$results = $stmt->fetchALL();
+	$breadcrumb=array(
     array('title'=>'Πρότυπα Ερωτηματολόγια','href'=>'')
 );
+}
 echo '<div class="container-fluid">
     '.show_breacrumb($breadcrumb).'
     <div class="row">
         <div class="col-sm-12">
             <h3>Πρότυπα Ερωτηματολόγια
-                <a class="btn btn-primary btn-sm pull-right" href="add_template.php">Προσθήκη Νέου</a>
+                <a class="btn btn-primary btn-sm pull-right" href="add_template.php">Προσθήκη Νέου Πρότυπου Ερωτηματολογίου</a>
             </h3>
         </div>
     </div>

@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             header("Location: edit_template.php?id=$new_id");
             exit;
         } else {
-            echo "<div class='row'><div class='col-sm-12'><div class='alert alert-danger'>Η εκχώρηση δεν πραγματοποιήθηκε. Δοκιμάστε ξανά.</div></div></div>";
+            echo "<div class='row'><div class='col-sm-12'><div class='alert alert-danger'>Η δημιουργία νέου πρότυπου ερωτηματολογίου δεν πραγματοποιήθηκε με επιτυχία. Παρακαλούμε δοκιμάστε ξανά.</div></div></div>";
         }
     }
 }
@@ -47,7 +47,7 @@ echo '<div class="row">
                 <div class="box">
                 <div class="row">
                     <div class="col-sm-12">
-                        <h3>Προσθήκη Νέου Πρότυπου Ερωτηματολογίου</h3>
+                        <h4>Προσθήκη Νέου Πρότυπου Ερωτηματολογίου</h4>
                     </div>
                 </div>
                 <form action="add_template.php" method="post">
@@ -57,7 +57,7 @@ echo '<div class="row">
                     </div>
 
                     <div class="form-group">
-                        <label for="description" class="form-control-label">Σύντομη Περιγραφή: </label>
+                        <label for="description" class="form-control-label">Συνοπτική Περιγραφή: </label>
                         <textarea rows="5" class="form-control" name="description" id="description"></textarea>
                     </div>';
 
@@ -69,13 +69,13 @@ echo '<div class="row">
                     $total = $stmt->rowCount();
                     if ($total > 0) {
                         echo '<div class="form-group">
-                            <label for="date_ends" class="form-control-label">Επιλογή Καναλιού </label><br/>';
+                            <label for="date_ends" class="form-control-label">Επιλογή Καναλιού:</label><br/>';
                             foreach ($results as $result) {
                                 echo "<label for='channel_$result->id'><input type='checkbox' name='channel[]' value='$result->id' id='channel_$result->id'/> $result->title</label><br/>";
                             }
                         echo '</div>';
                     }
-                    echo '<button class="btn btn-primary btn-sm full-width" type="submit">Δημιουργία</button>
+                    echo '<button class="btn btn-primary btn-sm full-width" type="submit">Δημιουργία Ερωτηματολογίου</button>
                 </form>
             </div>
             </div>

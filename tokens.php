@@ -38,8 +38,8 @@ echo '<div class="container-fluid">
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th>Τίτλος</th>
-                    <th>Δημιουργία pdf</th>
+                    <th>Εκπαιδευτικό Πρόγραμμα</th>
+                    <th>Σειρά Κωδικών Token</th>
                 </tr>
                 </thead>
                 <tbody>';

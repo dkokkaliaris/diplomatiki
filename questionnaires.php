@@ -71,7 +71,7 @@ echo '<div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">
                 <h3>Ερωτηματολόγια
-                    <a class="btn btn-primary btn-sm pull-right" href="add_questionnaire.php">Προσθήκη Νέου</a>
+                    <a class="btn btn-primary btn-sm pull-right" href="add_questionnaire.php">Προσθήκη Νέου Ερωτηματολογίου</a>
                 </h3>
             </div>
         </div>

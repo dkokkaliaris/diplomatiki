@@ -27,7 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $params = array(':title' => $title, ':description' => $description, ':time_begins' => $date_begins, ':time_ends' => $date_ends, ':template' => 0, ':user_id' => $_SESSION['userid'], ':lesson_id' => $lesson, ':last_edit_time' => date('Y-m-d H:i:s'), ':last_editor' => $_SESSION['userid']);
         $sql = 'INSERT INTO dk_questionnaire (title, description, time_begins, time_ends, template, user_id, lesson_id, last_edit_time, last_editor) VALUES (:title, :description, :time_begins, :time_ends, :template, :user_id, :lesson_id, :last_edit_time, :last_editor)';
         $stmt = $dbh->prepare($sql);
-        //$params = array(':title' => $title, ':description' => $description, ':time_begins' => date('Y-m-d H:i', strtotime(str_replace('/', '-', $date_begins))), ':time_ends' => date('Y-m-d H:i', strtotime(str_replace('/', '-', $date_ends))), ':template' => 0, ':user_id' => $_SESSION['userid'], ':lesson_id' => $lesson, ':last_edit_time' => date('Y-m-d H:i:s'), ':last_editor' => $_SESSION['userid']);
 
         $stmt->execute($params);
 
@@ -44,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             header("Location: edit_questionnaire.php?id=$new_id");
             exit;
         } else {
-            echo "<div class='row'><div class='col-sm-12'><div class='alert alert-danger'>Η εκχώρηση δεν πραγματοποιήθηκε. Δοκιμάστε ξανά.</div></div></div>";
+            echo "<div class='row'><div class='col-sm-12'><div class='alert alert-danger'>Η δημιουργία του ερωτηματολογίου δεν πραγματοποιήθηκε με επιτυχία. Παρακαλούμε δοκιμάστε ξανά.</div></div></div>";
         }
     }
 }
@@ -53,7 +52,7 @@ echo '<div class="row">
             <div class="box">
             <div class="row">
                 <div class="col-sm-12">
-                    <h3>Προσθήκη Νέου Ερωτηματολογίου</h3>
+                    <h4>Προσθήκη Νέου Ερωτηματολογίου</h4>
                 </div>
             </div>
             <form action="add_questionnaire.php" method="post">
@@ -63,10 +62,10 @@ echo '<div class="row">
                 </div>
 
                 <div class="form-group">
-                    <label for="lesson" class="form-control-label">Μάθημα: </label>
+                    <label for="lesson" class="form-control-label">Εκπαιδευτικό Πρόγραμμα: </label>
                     <select name="lesson" id="lesson"
                             class="form-control type" style="width: auto;">
-                        <option value="0">Επιλογή Μαθήματος</option>';
+                        <option value="0">Επιλογή Εκπαιδευτικού Προγράμματος</option>';
                         $params = array();
                         if ($_SESSION['level'] == 3){
                             $params= array(':id' => $_SESSION['userid']);
@@ -90,7 +89,7 @@ echo '<div class="row">
                 </div>';
                 echo '
                 <div class="form-group">
-                    <label for="description" class="form-control-label">Μικρή Περιγραφή: </label>
+                    <label for="description" class="form-control-label">Συνοπτική Περιγραφή: </label>
                     <textarea rows="5" class="form-control" name="description" id="description"></textarea>
                 </div>
 
@@ -113,7 +112,7 @@ echo '<div class="row">
                 $total = $stmt->rowCount();
                 if ($total > 0) {
                     echo '<div class="form-group">
-                        <label for="date_ends" class="form-control-label">Επιλογή Καναλιού </label><br/>';
+                        <label for="date_ends" class="form-control-label">Επιλογή Καναλιού:</label><br/>';
 
                         foreach ($results as $result) {
                             echo "
@@ -122,7 +121,7 @@ echo '<div class="row">
                         }
                     echo '</div>';
                 }
-                echo '<button class="btn btn-primary btn-sm full-width" type="submit">Δημιουργία</button>
+                echo '<button class="btn btn-primary btn-sm full-width" type="submit">Δημιουργία Ερωτηματολογίου</button>
             </form>
             </div>
         </div>

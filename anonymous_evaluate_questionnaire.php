@@ -7,9 +7,8 @@ $ip = $_SERVER['REMOTE_ADDR'];
 $id = $_GET['id'];
 
 // ελέγχω αν ο χρήστης έχει ξανακάνει αξιολόγιση το συγκεκριμένο ερωτηματολόγιο, και αν ναι αν περασε μιση ωρα απο την τελευταία φορά
+$stmt = $dbh->prepare("SELECT * FROM dk_ips where ip = :ip and questionnaire_id = :id");
 $params = array(':ip'=>$ip,':id' => $id);
-$sql = "SELECT * FROM dk_ips where ip = :ip and questionnaire_id = :id";
-$stmt = $dbh->prepare($sql);
 $stmt->execute($params);
 $row = $stmt->fetchObject();
 
@@ -38,26 +37,23 @@ function random_string($length)
 }
 
 // φέρνω το ερωτηματολόγιο
+$stmt = $dbh->prepare("SELECT * FROM dk_questionnaire where id = :id");
 $params = array(':id' => $id);
-$sql = "SELECT * FROM dk_questionnaire where id = :id";
-$stmt = $dbh->prepare($sql);
 $stmt->execute($params);
 $result = $stmt->fetchObject();
 
 if ($_SERVER['REQUEST_METHOD'] == "POST" && $available) {
 
+    $stmt = $dbh->prepare("SELECT * FROM dk_questionnaire_questions where questionnaire_id = :id");
     $params = array(':id' => $id);
-    $sql = "SELECT * FROM dk_questionnaire_questions where questionnaire_id = :id";
-    $stmt = $dbh->prepare($sql);
     $stmt->execute($params);
     $results = $stmt->fetchAll();
 
     $requiredFields = true;
     foreach ($results as $q) {
 
+        $stmt = $dbh->prepare("SELECT * FROM dk_question where id = :id");
         $params = array(':id' => $q->question_id);
-        $sql = "SELECT * FROM dk_question where id = :id";
-        $stmt = $dbh->prepare($sql);
         $stmt->execute($params);
         $questionData = $stmt->fetchObject();
 
@@ -79,9 +75,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && $available) {
     if ($requiredFields) {
         foreach ($results as $q) {
 
+            $stmt = $dbh->prepare("SELECT * FROM dk_question where id = :id");
             $params = array(':id' => $q->question_id);
-            $sql = "SELECT * FROM dk_question where id = :id";
-            $stmt = $dbh->prepare($sql);
             $stmt->execute($params);
             $questionData = $stmt->fetchObject();
             if ($questionData->type == 'file') {
@@ -93,9 +88,8 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && $available) {
 
                 $date = date('Y-m-d H:i:s');
 
+                $stmt = $dbh->prepare('INSERT INTO dk_answers (questionnaire_id, question_id, user_id, time, type, filename, hashname) VALUES (:questionnaire_id, :question_id, :user_id, :time, :type, :filename, :hashname)');
                 $params = array(':questionnaire_id' => $id, ':question_id' => $q->question_id, ':user_id' => session_status() == PHP_SESSION_ACTIVE ? $_SESSION['userid'] : 0, ':time' => $date, ':type' => $questionData->type, ':filename' => $fileName, ':hashname' => md5($fileName));
-                $sql = 'INSERT INTO dk_answers (questionnaire_id, question_id, user_id, time, type, filename, hashname) VALUES (:questionnaire_id, :question_id, :user_id, :time, :type, :filename, :hashname)';
-                $stmt = $dbh->prepare($sql);
                 $stmt->execute($params);
             } else {
                 if (isset($_POST['question-' . $q->question_id]) && $_POST['question-' . $q->question_id] != '') {
@@ -103,31 +97,26 @@ if ($_SERVER['REQUEST_METHOD'] == "POST" && $available) {
 
                     $date = date('Y-m-d H:i:s');
 
+                    $stmt = $dbh->prepare('INSERT INTO dk_answers (questionnaire_id, question_id, answer, user_id, time, type) VALUES (:questionnaire_id, :question_id, :answer, :user_id, :time, :type)');
                     $params = array(':questionnaire_id' => $id, ':question_id' => $q->question_id, ':answer' => $answer, ':user_id' => session_status() == PHP_SESSION_ACTIVE ? $_SESSION['userid'] : 0, ':time' => $date, ':type' => $questionData->type);
-                    $sql = 'INSERT INTO dk_answers (questionnaire_id, question_id, answer, user_id, time, type) VALUES (:questionnaire_id, :question_id, :answer, :user_id, :time, :type)';
-                    $stmt = $dbh->prepare($sql);
                     $stmt->execute($params);
                 }
             }
         }
 
+        $stmt = $dbh->prepare("SELECT * FROM dk_ips where ip = :ip and questionnaire_id = :id");
         $params = array(':ip'=>$ip,':id' => $id);
-        $sql = "SELECT * FROM dk_ips where ip = :ip and questionnaire_id = :id";
-        $stmt = $dbh->prepare($sql);
         $stmt->execute($params);
         $ipsResult = $stmt->fetchObject();
 
 
         if ($ipsResult == null) {
+            $stmt = $dbh->prepare('INSERT INTO dk_ips (ip, timestamp, questionnaire_id) VALUES (:ip, :timestamp, :questionnaire_id)');
             $params = array(':ip' => $ip, ':timestamp' => date('Y-m-d H:i:s'), ':questionnaire_id' => $id);
-            $sql = 'INSERT INTO dk_ips (ip, timestamp, questionnaire_id) VALUES (:ip, :timestamp, :questionnaire_id)';
-            $stmt = $dbh->prepare($sql);
-
             $stmt->execute($params);
         } else {
+            $stmt = $dbh->prepare('UPDATE dk_ips SET timestamp =  :timestamp');
             $params = array(':timestamp' => date('Y-m-d H:i:s'));
-            $sql = 'UPDATE dk_ips SET timestamp =  :timestamp';
-            $stmt = $dbh->prepare($sql);
             $stmt->execute($params);
         }
 
@@ -153,23 +142,20 @@ echo '<div class="container-fluid">
                     echo '<form action="anonymous_evaluate_questionnaire.php?id='.$id.'" method="post" enctype="multipart/form-data">';
                         $questionNo = 0;
                         // φέρνω τις ερωτήσεις του
+                        $stmt = $dbh->prepare("SELECT * FROM dk_questionnaire_questions where questionnaire_id = :id order by order_by");
                         $params = array(':id' => $id);
-                        $sql = "SELECT * FROM dk_questionnaire_questions where questionnaire_id = :id order by order_by";
-                        $stmt = $dbh->prepare($sql);
                         $stmt->execute($params);
                         $results = $stmt->fetchAll();
 
                         foreach ($results as $q) {
 
+                            $stmt = $dbh->prepare("SELECT * FROM dk_question where id = :id");
                             $params = array(':id' => $q->question_id);
-                            $sql = "SELECT * FROM dk_question where id = :id";
-                            $stmt = $dbh->prepare($sql);
                             $stmt->execute($params);
                             $questionData = $stmt->fetchObject();
 
+                            $stmt = $dbh->prepare("SELECT * FROM dk_question_options where question_id = :id");
                             $params = array(':id' => $q->question_id);
-                            $sql = "SELECT * FROM dk_question_options where question_id = :id";
-                            $stmt = $dbh->prepare($sql);
                             $stmt->execute($params);
                             $questionOptions = $stmt->fetchAll();
 

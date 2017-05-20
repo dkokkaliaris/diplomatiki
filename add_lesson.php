@@ -15,19 +15,19 @@ echo '<div class="container-fluid">
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     // έλεγχω αν είναι καθηγητής και δεν έχει συμπληρώσει τον τίτλο
     if ($_SESSION['level'] == 3 && (!isset($_POST['title']) || $_POST['title'] == '')) {
-        echo "<div class='alert alert-danger'>Παρακαλώ συμπληρώστε όλα τα πεδία.</div>";
-    // έλεγχω αν είναι ΟΜΕΑ η διαχειριστής και δεν έχει συμπληρώσει τον τίτλο και όνομα καθηγητή
+        echo "<div class='alert alert-danger'>Παρακαλούμε συμπληρώστε όλα τα πεδία της φόρμας.</div>";
+    // έλεγχω αν είναι ΟΜΕΑ ή διαχειριστής και δεν έχει συμπληρώσει τον τίτλο και το όνομα καθηγητή
     } else if (($_SESSION['level'] == 1 || $_SESSION['level'] == 2) && ((!isset($_POST['title']) || $_POST['title'] == '') || (!isset($_POST['professors']) || $_POST['professors'] == 0))) {
-        echo "<div class='alert alert-danger'>Παρακαλώ συμπληρώστε όλα τα πεδία.</div>";
+        echo "<div class='alert alert-danger'>Παρακαλούμε συμπληρώστε όλα τα πεδία της φόρμας.</div>";
     } else {
         $title = sanitize($_POST['title']);
         $description = sanitize($_POST['description']);
 
-        // Αν ειμαι ΟΜΕΑ η διαχειριστής βάζω το userid το id του καθηγητή
+        // Αν ειμαι ΟΜΕΑ ή διαχειριστής βάζω το userid το id του καθηγητή
         if($_SESSION['level'] == 1 || $_SESSION['level'] == 2){
             $userId = $_POST['professors'];
         }else {
-        // αν ειμαι καθηγητής μπαίνει αυτόματα το ID μου
+        // Αν ειμαι καθηγητής μπαίνει αυτόματα το ID μου
             $userId = $_SESSION['userid'];
         }
 
@@ -37,14 +37,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $stmt = $dbh->prepare($sql);
         $stmt->execute($params);
 
-        // Η βάση μας γνωστοποιεί το ID του ερωτηματολογίου που μόλις δημιούργησε και το αποθηκευύομε.
+        // Η βάση μας γνωστοποιεί το ID του ερωτηματολογίου που μόλις δημιούργησε και το αποθηκεύουμε.
         $new_id = $dbh->lastInsertId();
 
         if ($new_id > 0) {
             header("Location: lessons.php");
             exit;
         } else {
-            echo "<div class='row'><div class='col-sm-12'><div class='alert alert-danger'>Η εκχώρηση δεν πραγματοποιήθηκε. Δοκιμάστε ξανά.</div></div></div>";
+            echo "<div class='row'><div class='col-sm-12'><div class='alert alert-danger'>Η δημιουργία του εκπαιδευτικού προγράμματος δεν πραγματοποιήθηκε με επιτυχία. Παρακαλούμε δοκιμάστε ξανά.</div></div></div>";
         }
     }
 }
@@ -53,7 +53,7 @@ echo '<div class="row">
             <div class="box">
                 <div class="row">
                     <div class="col-sm-12">
-                        <h3>Προσθήκη Νέου Εκπαιδευτικού Προγράμματος</h3>
+                        <h4>Προσθήκη Νέου Εκπαιδευτικού Προγράμματος</h4>
                     </div>
                 </div>
                 <div class="row">
@@ -67,18 +67,20 @@ echo '<div class="row">
 
                             if ($_SESSION['level'] == 1 || $_SESSION['level'] == 2) {
                                 echo '<div class="form-group">
-                                    <label class="form-control-label" for="professors">Καθηγητής: </label>
+                                    <label class="form-control-label" for="professors">Υπεύθυνος Προγράμματος: </label>
                                     <select name="professors" id="professors" class="form-control type">
                                         <option value="" selected>Επιλογή Καθηγητή</option>';
-                                            $stmt = $dbh->prepare('SELECT * FROM dk_users where type = 3');
+                                            $stmt = $dbh->prepare('SELECT * FROM dk_users where type = 3 or type = 2 or type =1');
                                             $stmt->execute();
                                             $professors = $stmt->fetchALL();
                                             foreach ($professors as $professor) {
                                                 echo '<option value="'.$professor->id.'">'.$professor->last_name." ".$professor->first_name.'</option>';
                                             }
                                         }
+										
                                     echo '</select>
-                                    <button class="btn btn-primary full-width" type="submit">Δημιουργία</button>
+									<br/>
+                                    <button class="btn btn-primary full-width" type="submit">Δημιουργία Εκπαιδευτικού Προγράμματος</button>
                                 </div>
                         </form>
                     </div>

@@ -22,18 +22,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $email = sanitize($_POST['email']);
     $telephone = sanitize($_POST['telephone']);
 
+    $stmt = $dbh->prepare('UPDATE dk_users SET type = :type, first_name = :first_name, last_name = :last_name, username = :username, aem = :aem, email = :email, telephone = :telephone where id = :id');
     $params = array(':type' => $type, ':first_name' => $first_name, ':last_name' => $last_name, ':username' => $username, ':aem' => $aem, ':email' => $email, ':telephone' => $telephone, ':id' => $id);
-    $sql = 'UPDATE dk_users SET type = :type, first_name = :first_name, last_name = :last_name, username = :username, aem = :aem, email = :email, telephone = :telephone where id = :id';
-    $stmt = $dbh->prepare($sql);
     $stmt->execute($params);
 
     header("Location: users.php?a=1");
 }
 
 //Παίρνουμε όλους τους χρήστες
-$params = array(':id' => $id);
-$sql = "SELECT * FROM dk_users where id = :id;";
-$stmt = $dbh->prepare($sql);
+$stmt = $dbh->prepare("SELECT * FROM dk_users where id = $id;");
 $stmt->execute();
 $user = $stmt->fetchObject();
 $breadcrumb=array(

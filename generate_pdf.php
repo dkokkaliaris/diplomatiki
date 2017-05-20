@@ -16,16 +16,14 @@ $html = "";
 
 $id = $_GET['id'];
 // φέρνω όλα τα ερωτηματολόγια
+$stmt = $dbh->prepare('SELECT * FROM dk_tokens where questionnaire_id = :id and used = 0;');
 $params = array(':id' => $id);
-$sql = 'SELECT * FROM dk_tokens where questionnaire_id = :id and used = 0;';
-$stmt = $dbh->prepare($sql);
 $stmt->execute($params);
 
 $results = $stmt->fetchALL();
 
+$stmt = $dbh->prepare('SELECT * FROM dk_questionnaire where id = :id ;');
 $params = array(':id' => $id);
-$sql = 'SELECT * FROM dk_questionnaire where id = :id ;';
-$stmt = $dbh->prepare($sql);
 $stmt->execute($params);
 $questionnaire = $stmt->fetchObject();
 

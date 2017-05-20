@@ -9,18 +9,16 @@ get_header();?>
 <?php $id = sanitize($_GET['id']);
 
 // φέρνω όλες τις απαντήσεις
+$stmt = $dbh->prepare("SELECT * FROM dk_questionnaire_questions where questionnaire_id = :id ;");
 $params = array(':id' => $id);
-$sql = "SELECT * FROM dk_questionnaire_questions where questionnaire_id = :id ;";
-$stmt = $dbh->prepare($sql);
 $stmt->execute($params);
+
 $results = $stmt->fetchALL();
 
 
 // φέρνω τις πληροφορίες του ερωτηματολογίου
+$stmt = $dbh->prepare("SELECT * FROM dk_questionnaire where id = :id ;");
 $params = array(':id' => $id);
-$sql = "SELECT * FROM dk_questionnaire where id = :id ;";
-$stmt = $dbh->prepare($sql);
-
 $stmt->execute($params);
 
 $questionnaire = $stmt->fetchObject();
@@ -58,9 +56,8 @@ echo '<div class="container-fluid">
                 <div class="row">
                     <div class="col-xs-6">';
 
+                        $stmt = $dbh->prepare("SELECT * FROM dk_question where id = :id ;");
                         $params = array(':id' => $result->question_id);
-                        $sql = "SELECT * FROM dk_question where id = :id ;";
-                        $stmt = $dbh->prepare($sql);
                         $stmt->execute($params);
 
 
@@ -85,9 +82,8 @@ echo '<div class="container-fluid">
                                 break;
                         endswitch;
 
+                        $stmt = $dbh->prepare("SELECT * FROM dk_answers where questionnaire_id = :questionnaire_id and question_id = :id ;");
                         $params = array(':questionnaire_id'=>$id, ':id' => $result->question_id);
-                        $sql = "SELECT * FROM dk_answers where questionnaire_id = :questionnaire_id and question_id = :id ;";
-                        $stmt = $dbh->prepare($sql);
                         $stmt->execute($params);
 
                         $answers = $stmt->fetchAll();
@@ -110,9 +106,8 @@ echo '<div class="container-fluid">
 
                         if($question->multi_type == 'number'){
                             $mo = $data_mo/$sum_answer;
+                            $stmt = $dbh->prepare("SELECT MAX(pick) AS max FROM dk_question_options where question_id = :id ;");
                             $params = array(':id' => $question->id);
-                            $sql = "SELECT MAX(pick) AS max FROM dk_question_options where question_id = :id ;";
-                            $stmt = $dbh->prepare($sql);
                             $stmt->execute($params);
 
                             $max = $stmt->fetchObject();

@@ -13,9 +13,8 @@ get_header();
 
 if (isset($_GET['action']) && sanitize($_GET['action']) == "delete") {
     $id = sanitize($_GET['id']);
+    $stmt = $dbh->prepare('DELETE FROM dk_lessons WHERE id = :id');
     $params = array(':id' => $id);
-    $sql = 'DELETE FROM dk_lessons WHERE id = :id';
-    $stmt = $dbh->prepare($sql);
     $stmt->execute($params);
 }
 
@@ -44,8 +43,7 @@ if (!empty($_REQUEST['sorthow'])) {
 }
 
 
-$sql = "SELECT count(*) FROM dk_lessons join dk_questionnaire_lessons on dk_questionnaire_lessons.lessons_id =  dk_lesons.id GROUP by dk_questionnaire_lessons.lessons_id;";
-$stmt = $dbh->prepare($sql);
+$stmt = $dbh->prepare( "SELECT count(*) FROM dk_lessons join dk_questionnaire_lessons on dk_questionnaire_lessons.lessons_id =  dk_lessons.id GROUP by dk_questionnaire_lessons.lessons_id;" );
 $stmt->execute();
 $total_pages = $result->fetchColumn();
 
@@ -63,8 +61,7 @@ $breadcrumb=array(
 );
 
 // φέρνω όλα τα μαθήματα
-$sql = "SELECT * FROM dk_lessons join dk_questionnaire_lessons on dk_questionnaire_lessons.lessons_id =  dk_lessons.id join dk_questionnaire on dk_questionnaire_lessons.questionnaire_id = dk_questionnaire.id where dk_questionnaire.time_begins < NOW() and dk_questionnaire.time_ends > NOW() GROUP by dk_questionnaire_lessons.lessons_id $sortby $sorthow LIMIT $start,$limit;";
-$stmt = $dbh->prepare($sql);
+$stmt = $dbh->prepare("SELECT * FROM dk_lessons join dk_questionnaire_lessons on dk_questionnaire_lessons.lessons_id =  dk_lessons.id join dk_questionnaire on dk_questionnaire_lessons.questionnaire_id = dk_questionnaire.id where dk_questionnaire.time_begins < NOW() and dk_questionnaire.time_ends > NOW() GROUP by dk_questionnaire_lessons.lessons_id $sortby $sorthow LIMIT $start,$limit;");
 $stmt->execute();
 $results = $stmt->fetchALL();
 echo '<div class="container-fluid">

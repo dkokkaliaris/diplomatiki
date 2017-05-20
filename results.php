@@ -66,7 +66,7 @@ echo '<div class="container-fluid">
                 <th>Μάθημα</th>
                 <th><a href="questionnaires.php?sortby=time_begins&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Ημερομηνία Έναρξης</a></th>
                 <th><a href="questionnaires.php?sortby=time_ends&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Ημερομηνία Λήξης</a></th>
-                <th>Ενέργειες</th>
+                <th>Προβολή Αποτελεσμάτων</th>
             </tr>
             </thead>
             <tbody>';
@@ -103,8 +103,6 @@ echo '<div class="container-fluid">
                         else echo '-';
                     echo '</td>
                     <td>
-                        <a href="questionnaire_result.php?id='.$result->id.'" type="button"><span class="fa fa-list-alt" aria-hidden="true"></span></a>
-
                         <a href="questionnaire_graphs.php?id='.$result->id.'" type="button"><span class="fa fa-area-chart" aria-hidden="true"></span></a>
                     </td>
                 </tr>';

@@ -6,30 +6,14 @@ if (!is_logged_in()) {
     exit;
 }
 
-// Μέθοδος αυτόματης δημιουργίας τυχαίου κωδικού
-// http://stackoverflow.com/questions/6101956/generating-a-random-password-in-php
-function randomPassword($num)
-{
-    $alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
-    $pass = array(); //remember to declare $pass as an array
-    $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
-    for ($i = 0; $i < $num; $i++) {
-        $n = rand(0, $alphaLength);
-        $pass[] = $alphabet[$n];
-    }
-    return implode($pass); //turn the array into a string
-}
-
-
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     if (!isset($_POST['questionnaire'], $_POST['no_of_tokens'], $_POST['time_begins'], $_POST['time_ends'])) {
-        echo "<div class='alert alert-danger'>Παρακαλώ συμπληρώστε όλα τα πεδία.</div>";
+        echo "<div class='alert alert-danger'>Παρακαλούμε συμπληρώστε όλα τα πεδία της φόρμας.</div>";
     } else {
         $no_of_tokens = sanitize($_POST['no_of_tokens']);
         $questionnaire = sanitize($_POST['questionnaire']);
         $begin = sanitize($_POST['time_begins']);
         $end = sanitize($_POST['time_ends']);
-
 
         $max_rank = 6;
         $max_token = 6;
@@ -67,16 +51,15 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
         if ($new_id > 0) {
             header("Location: tokens.php");
-            //header("Location: edit_lesson.php?id=$new_id");
             exit;
         } else {
-            echo "<div class='alert alert-danger'>Η εκχώρηση δεν πραγματοποιήθηκε. Δοκιμάστε ξανά.</div>";
+            echo "<div class='alert alert-danger'>Η δημιουργία των κωδικών δεν πραγματοποιήθηκε με επιτυχία. Παρακαλούμε δοκιμάστε ξανά.</div>";
         }
     }
 }
 $breadcrumb=array(
     array('title'=>'Διαχείριση Κωδικών Token','href'=>'tokens.php'),
-    array('title'=>'Προσθήκη Νέου Κωδικού Token','href'=>''),
+    array('title'=>'Δημιουργία Κωδικών Token','href'=>''),
 );
 echo '
 <div class="container-fluid">
@@ -86,11 +69,9 @@ echo '
             <div class="box">
             <div class="row">
                 <div class="col-sm-12">
-                    <h3>Διαχείριση Κωδικών Token</h3>
+                    <h3>Δημιουργία Κωδικών Token</h3>
                 </div>
             </div>
-
-            <br/>
 
             <div class="row">
                 <div class="col-sm-12">
@@ -98,8 +79,7 @@ echo '
                         <div class="form-group">
 
                             <label for="questionnaire" class="form-control-label">Ερωτηματολόγιο: </label>
-                            <select name="questionnaire" id="questionnaire"
-                                    class="form-control type">
+                            <select name="questionnaire" id="questionnaire" class="form-control type">
                                 <option value="0">Επιλογή Ερωτηματολογίου</option>';
                                 $stmt = $dbh->prepare('SELECT * FROM dk_questionnaire where template = 0 and user_id = :id;');
                                 $params = array(':id' => $_SESSION['userid']);
@@ -113,7 +93,7 @@ echo '
                         </div>
 
                         <div class="form-group">
-                            <label for="no_of_tokens" class="form-control-label">Αριθμός tokens: </label>
+                            <label for="no_of_tokens" class="form-control-label">Πλήθος κωδικών Token: </label>
                             <input type="number" id="no_of_tokens" name="no_of_tokens" class="form-control" min="0"/>
                         </div>
 
@@ -127,7 +107,7 @@ echo '
                             <input type="text" class="form-control" name="time_ends" id="time_ends" autocomplete="off"/>
                         </div>
 
-                        <button class="btn btn-primary btn-sm full-width" type="submit">Δημιουργία</button>
+                        <button class="btn btn-primary btn-sm full-width" type="submit">Δημιουργία Κωδικών</button>
                     </form>
                 </div>
             </div>
