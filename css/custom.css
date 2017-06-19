@@ -215,3 +215,13 @@ footer{padding: 15px;background: #036ec9;color: #fff;}
 .table-row:nth-of-type(odd) {background-color: #f9f9f9;}
 .margin-30-0{margin: 30px 0;}
 .height400{max-height: 400px;}
+.selection{transition: 0.2s all ease-in-out;}
+.selection:hover{background-color: rgba(173, 216, 230, 0.6);}
+.table .thead-inverse th {color: #fff;background-color: #373a3c;}
+label.error{display: none!important;}
+input.error, textarea.error, select.error{background-color: rgba(255, 0, 0, 0.2);}
+tr.alert-success{background-color: #dff0d8!important;}
+@media print {
+    header, .logo-container, .menu-section, .breadcrumb, .print-form {display: none;}
+    .printbreak {page-break-before: always;}
+}

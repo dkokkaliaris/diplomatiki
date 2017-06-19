@@ -1,14 +1,13 @@
 <?php
 include_once "includes/init.php";
-get_header();
 if (!is_logged_in()) {
     header("Location: ".BASE_URL.'login.php');
     exit;
 }
-
+$alert = '';
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     if (!isset($_POST['questionnaire'], $_POST['no_of_tokens'], $_POST['time_begins'], $_POST['time_ends'])) {
-        echo "<div class='alert alert-danger'>Παρακαλούμε συμπληρώστε όλα τα πεδία της φόρμας.</div>";
+        $alert = "<div class='alert alert-danger'>Παρακαλούμε συμπληρώστε όλα τα πεδία της φόρμας.</div>";
     } else {
         $no_of_tokens = sanitize($_POST['no_of_tokens']);
         $questionnaire = sanitize($_POST['questionnaire']);
@@ -50,13 +49,14 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $new_id = $dbh->lastInsertId();
 
         if ($new_id > 0) {
-            header("Location: tokens.php");
+            header("Location: tokens.php?status=1");
             exit;
         } else {
-            echo "<div class='alert alert-danger'>Η δημιουργία των κωδικών δεν πραγματοποιήθηκε με επιτυχία. Παρακαλούμε δοκιμάστε ξανά.</div>";
+            $alert = "<div class='alert alert-danger'>Η δημιουργία των κωδικών δεν πραγματοποιήθηκε με επιτυχία. Παρακαλούμε δοκιμάστε ξανά.</div>";
         }
     }
 }
+get_header();
 $breadcrumb=array(
     array('title'=>'Διαχείριση Κωδικών Token','href'=>'tokens.php'),
     array('title'=>'Δημιουργία Κωδικών Token','href'=>''),
@@ -65,22 +65,21 @@ echo '
 <div class="container-fluid">
    '.show_breacrumb($breadcrumb).'
     <div class="row">
-        <div class="col-sm-12 col-lg-6 col-md-8 col-lg-offset-3 col-md-offset-2">
+        <div class="col-sm-12 col-lg-6 col-md-8 col-lg-offset-3 col-md-offset-2">'.$alert.'
             <div class="box">
             <div class="row">
                 <div class="col-sm-12">
-                    <h3>Δημιουργία Κωδικών Token</h3>
+                    <h4>Δημιουργία Κωδικών Token</h4>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-sm-12">
-                    <form action="generate_tokens.php" method="post">
+                    <form action="generate_tokens.php" method="post" id="generate_tokens_form" novalidate="">
                         <div class="form-group">
-
                             <label for="questionnaire" class="form-control-label">Ερωτηματολόγιο: </label>
-                            <select name="questionnaire" id="questionnaire" class="form-control type">
-                                <option value="0">Επιλογή Ερωτηματολογίου</option>';
+                            <select name="questionnaire" id="questionnaire" class="form-control type" required="">
+                                <option value="">Επιλογή Ερωτηματολογίου</option>';
                                 $stmt = $dbh->prepare('SELECT * FROM dk_questionnaire where template = 0 and user_id = :id;');
                                 $params = array(':id' => $_SESSION['userid']);
                                 $stmt->execute($params);
@@ -93,18 +92,18 @@ echo '
                         </div>
 
                         <div class="form-group">
-                            <label for="no_of_tokens" class="form-control-label">Πλήθος κωδικών Token: </label>
-                            <input type="number" id="no_of_tokens" name="no_of_tokens" class="form-control" min="0"/>
+                            <label for="no_of_tokens" class="form-control-label">Πλήθος Κωδικών Token: </label>
+                            <input type="number" id="no_of_tokens" name="no_of_tokens" class="form-control" min="0" required=""/>
                         </div>
 
                         <div class="form-group" id="date_start_layout">
                             <label for="time_begins" class="form-control-label">Ημερομηνία Έναρξης: </label>
-                            <input type="text" class="form-control" name="time_begins" id="time_begins" autocomplete="off"/>
+                            <input type="text" class="form-control" name="time_begins" id="time_begins" autocomplete="off" required=""/>
                         </div>
 
                         <div class="form-group" id="date_ends_layout">
                             <label for="time_ends" class="form-control-label">Ημερομηνία Λήξης: </label>
-                            <input type="text" class="form-control" name="time_ends" id="time_ends" autocomplete="off"/>
+                            <input type="text" class="form-control" name="time_ends" id="time_ends" autocomplete="off" required=""/>
                         </div>
 
                         <button class="btn btn-primary btn-sm full-width" type="submit">Δημιουργία Κωδικών</button>
@@ -128,6 +127,9 @@ echo '
         timepicker: false,
         format: 'd/m/Y',
         closeOnDateSelect: true
+    });
+    jQuery(document).ready(function () {
+        jQuery('#generate_tokens_form').validate();
     });
 </script>
 

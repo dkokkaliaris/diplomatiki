@@ -1,9 +1,8 @@
 <?php
 include_once "includes/init.php";
 get_header();
-?>
-<div class="container">
-<?php
+$alert = '';
+echo '<div class="container">';
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $username = sanitize($_POST['username']);
     $password = sanitize($_POST['password']);
@@ -14,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $stmt->execute($params);
     $user = $stmt->fetchObject();
     $total = $stmt->rowCount();
-	
+
     //ΕΠΙΤΥΧΙΑ LOGIN: αν βρεθεί ο χρήστης (ένας χρήστης) αποθήκευσε το στο SESSION και κάνε login.
     if ($total == 1) {
         $_SESSION['userid'] = sanitize($user->id);
@@ -26,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
 
     //ΑΠΟΤΥΧΙΑ LOGIN: Αν δεν βρεθεί κάποιος χρήστης.
     } else {
-        echo "<div class='row'><div class='col-sm-12'><div class='alert alert-danger'>Τα στοιχεία που εισάγατε είναι λάθος ή δεν έχετε επιβεβαιώσει το email σας.</div></div></div>";
+        echo "<div class='row'><div class='col-sm-12'><div class='alert alert-danger'>Τα στοιχεία που συμπληρώσατε είναι λάθος. Παρακαλούμε δοκιμάστε ξανά.</div></div></div>";
     }
 }
 
@@ -41,47 +40,47 @@ echo '<br />
                             <option value="id-1" selected="">Είσοδος στο σύστημα με χρήση των κωδικών του arch.icte.uowm.gr</option>
                             <option value="id-2">Είσοδος στο σύστημα με χρήση των ιδρυματικών κωδικών</option>
                             <option value="id-3">Είσοδος στο σύστημα για υποβολή ανώνυμων αξιολογήσεων</option>
-                            <option value="id-4">Είσοδος στο σύστημα με χρήση μοναδικού κωδικού Token</option>
+                            <option value="id-4">Είσοδος στο σύστημα με χρήση κωδικού token</option>
                         </select>
                     </div>
-					
+
                     <div class="login-container" id="id-1"><br/>
 						<h5>Είσοδος στο σύστημα με χρήση των κωδικών του arch.icte.uowm.gr</h5>
                         <p>Για να συνδεθείτε στο πληροφοριακό σύστημα αξιολόγησης σεμιναρίων και μαθημάτων χρησιμοποιώντας τους κωδικούς από το εργαστήριο ψηφιακών συστημάτων και αρχιτεκτονικής υπολογιστών (arch.icte.uowm.gr), παρακαλούμε συμπληρώστε τα αντίστοιχα πεδία στην παρακάτω φόρμα.</p>
                         <p class="profile-name-card"></p>
-                        <form class="form-signin" action="" method="post">
+                        <form class="form-signin" id="login_form" action="" method="post" novalidate="">
                             <span class="reauth-email"></span>
                             <div class="form-group">
-                                <input class="form-control" placeholder="Όνομα Χρήστη (Username)" name="username" required="" autofocus="" type="text">
+                                <input class="form-control" placeholder="Όνομα Χρήστη (Username)" name="username" required="" autofocus="" type="text" required="">
                             </div>
                             <div class="form-group">
-                                <input class="form-control" placeholder="Κωδικός (Password)" required="" name="password" type="password">
+                                <input class="form-control" placeholder="Κωδικός Πρόσβασης (Password)" required="" name="password" type="password" required="">
                             </div>
                             <button class="btn btn-sm btn-primary btn-block btn-signin" type="submit">Είσοδος</button>
                         </form>
                     </div>
-					
+
                     <div class="login-container hide" id="id-2"><br/>
 						<h5>Είσοδος στο σύστημα με χρήση των ιδρυματικών κωδικών</h5>
                         <p>Για να συνδεθείτε στο πληροφοριακό σύστημα αξιολόγησης σεμιναρίων και μαθημάτων χρησιμοποιώντας τους ιδρυματικούς κωδικούς σας, παρακαλούμε πατήστε <a href="'.BASE_URL.'sso/home.php">εδώ</a>.</p>
                     </div>
-					
+
                     <div class="login-container hide" id="id-3"><br/>
 						<h5>Είσοδος στο σύστημα για υποβολή ανώνυμων αξιολογήσεων</h5>
-                        <p>Για να συνδεθείτε στο πληροφοριακό σύστημα αξιολόγησης σεμιναρίων και μαθημάτων για υποβολή ανώνυμων αξιολογήσεων, παρακαλούμε πατήστε <a href="anonymous_questionnaires.php">εδώ</a>.</p>
+                        <p>Για να συνδεθείτε στο πληροφοριακό σύστημα αξιολόγησης σεμιναρίων και μαθημάτων για υποβολή ανώνυμων αξιολογήσεων, παρακαλούμε πατήστε <a href="anonymous_questionnaires_warning.php">εδώ</a>.</p>
                     </div>
-					
+
                     <div class="login-container hide" id="id-4"><br/>
-						<h5>Είσοδος στο σύστημα με χρήση μοναδικού κωδικού Token</h5>
-                        <p>Για να συνδεθείτε στο πληροφοριακό σύστημα αξιολόγησης σεμιναρίων και μαθημάτων χρησιμοποιώντας τον μοναδικό κωδικό Token που λάβατε από τον υπεύθυνο του εκπαιδευτικού προγράμματος, παρακαλούμε συμπληρώστε στο παρακάτω πεδίο της φόρμας.</p>
-                        <form action="find_questionnaire_fromtoken.php" method="post">
+						<h5>Είσοδος στο σύστημα με χρήση κωδικού token</h5>
+                        <p>Για να συνδεθείτε στο πληροφοριακό σύστημα αξιολόγησης σεμιναρίων και μαθημάτων χρησιμοποιώντας τον μοναδικό κωδικό Token που λάβατε από τον υπεύθυνο του εκπαιδευτικού προγράμματος, παρακαλούμε συμπληρώστε την παρακάτω φόρμα.</p>
+                        <form action="find_questionnaire_fromtoken.php" method="post" novalidate="" id="token_form">
                             <div class="form-group">
-                                <input class="form-control" placeholder="Κωδικός Token" name="token" type="text">
+                                <input class="form-control" placeholder="Κωδικός Token" name="token" type="text" required="">
                             </div>
                             <button class="btn btn-sm btn-primary btn-block" type="submit">Είσοδος</button>
                         </form>
                     </div>
-					
+
                 </div>
             </div>
         </div>
@@ -91,6 +90,10 @@ echo '<br />
 <script>
     jQuery(document).ready(function () {
         //όταν αλλάξω την επιλογή εισόδου απο την λιστα τοτε παιρνει την τιμη της επιλογης που εμείς βαλαμε το id του κουτιου
+        //σε περίπτωση που παει πισω να του εμφανίσει τη επιλογή
+        jQuery('.login-container').hide();
+        //εμφανίζει μονο το div που εχει το id που επιλεχθηκε.
+        jQuery('#'+jQuery('#login-selection').val()).fadeIn();
         jQuery('#login-selection').on('change', function () {
 
             //κρύβει ολα τα div (κουτια) με την κλαση login-container
@@ -98,6 +101,8 @@ echo '<br />
             //εμφανίζει μονο το div που εχει το id που επιλεχθηκε.
             jQuery('#'+jQuery('#login-selection').val()).fadeIn();
         });
+        jQuery('#login_form').validate();
+        jQuery('#token_form').validate();
     });
 </script>
 

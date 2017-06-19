@@ -1,7 +1,7 @@
 <?php
 include_once "includes/init.php";
 get_header();
-
+$alert = '';
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $username = sanitize($_POST['username']);
@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     // Ελέγχουμε αν υπάρχει ο χρήστης με το ίδιο username και κωδικό
     $total = $stmt->rowCount();
     if ($total >= 1) {
-        echo "<div class='alert alert-danger'>Υπάρχει ήδη κάποιος χρήστης με αυτά τα στοιχεία. Παρακαλούμε προσθέστε νέα στοιχεία.</div>";
+        $alert = "<div class='alert alert-danger'>Υπάρχει ήδη κάποιος χρήστης με αυτά τα στοιχεία. Παρακαλούμε προσθέστε νέα στοιχεία.</div>";
     } else {
         $password = sanitize($_POST['password']);
         $type = 1;
@@ -23,13 +23,13 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $params = array(':username' => $username, ':email' => $email, ':password' => md5($password), ':type' => $type);
         $stmt->execute($params);
 
-        echo "<div class='alert alert-success'>Ο χρήστης δημιουργήθηκε.</div>";
+        $alert = "<div class='alert alert-success'>Ο χρήστης δημιουργήθηκε.</div>";
     }
 }
 echo '<br /><br />
 <div class="container-fluid">
     <div class="row">
-        <div class="col-lg-4 col-md-6 col-sm-12 col-lg-offset-4 col-md-offset-3">
+        <div class="col-lg-4 col-md-6 col-sm-12 col-lg-offset-4 col-md-offset-3">'.$alert.'
             <div class="box">
 
                 <img class="profile-img-card" src="//ssl.gstatic.com/accounts/ui/avatar_2x.png">

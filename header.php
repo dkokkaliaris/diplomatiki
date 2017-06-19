@@ -1,5 +1,10 @@
 <?php
-echo '<html lang="el">
+
+error_reporting(E_ALL);
+ini_set("display_errors",1);
+
+echo '<!DOCTYPE HTML>
+<html lang="el">
 <html>
 <head>
     <meta charset="utf-8" />
@@ -19,16 +24,19 @@ echo '<html lang="el">
 
     <!-- jQuery -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <!-- jQuery UI -->
+    <script src="'.BASE_URL.'js/jquery-ui.min.js"></script>
     <!-- Tether -->
     <script src="//www.atlasestateagents.co.uk/javascript/tether.min.js"></script>
     <!-- Bootstrap -->
     <script src="'.BASE_URL.'js/bootstrap.min.js"></script>
     <!-- JS DateTimePicker -->
     <script src="'.BASE_URL.'js/jquery.datetimepicker.js"></script>
-    <!-- jQuery UI -->
-    <script src="'.BASE_URL.'js/jquery-ui.min.js"></script>
     <!-- ChartJS -->
     <script src="'.BASE_URL.'js/Chart.min.js"></script>
+    <!-- jQuery Validator -->
+    <script src="'.BASE_URL.'js/jquery.validate.min.js"></script>
+    <script src="'.BASE_URL.'js/custom.js"></script>
     <title>Questionnaire</title>
 </head>
 <body>
@@ -37,7 +45,7 @@ echo '<html lang="el">
             <div class="row">
                 <div class="cold-md-12">
                     '.(is_logged_in()
-                        ?'<a href="'.BASE_URL.'logout.php" style="color: #FFFFFF">Έξοδος</a>'
+                        ?'<a href="'.BASE_URL.'logout.php" style="color: #FFFFFF">Έξοδος </a>('.$_SESSION['username'].')'
                         :'<a href="'.BASE_URL.'login.php" style="color: #FFFFFF">Είσοδος</a>').'
                 </div>
             </div>
@@ -45,7 +53,7 @@ echo '<html lang="el">
     </header>
     <div class="logo-container">
         <div class="container">
-            <a class="logo" href="'.BASE_URL.'index.php"><img class="logo" src= "'.BASE_URL.'assets/img/admin.png"></a>
+            <a class="logo" href="'.BASE_URL.'index.php"><img alt="i-evaluiation" class="logo" src= "'.BASE_URL.'img/admin.png"></a>
 
         </div>
     </div>

@@ -6,10 +6,9 @@ if (!is_logged_in()) {
 }else{
     if($_SESSION['level']>=2){
        header("Location: ".BASE_URL.'index.php');
-        die();
+       die();
     }
 }
-get_header();
 
 $id = $_GET['id'];
 
@@ -27,8 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $stmt->execute($params);
 
     header("Location: users.php?a=1");
+    exit;
 }
-
+get_header();
 //Παίρνουμε όλους τους χρήστες
 $stmt = $dbh->prepare("SELECT * FROM dk_users where id = $id;");
 $stmt->execute();
@@ -47,44 +47,48 @@ echo '<div class="container-fluid">
                         <h3>Επεξεργασία Χρηστών</h3>
                     </div>
                 </div>
-                <hr/>
                 <div class="row">
                     <div class="col-sm-12">
-                        <form action="edit_user.php?id='.$id.'" method="post">
+                        <form action="edit_user.php?id='.$id.'" method="post" id="edit_user_form" novalidate="">
                             <label for="first_name" class="form-control-label">Όνομα: </label>
-                            <input type="text" class="form-control" id="first_name" name="first_name" value="'.$user->first_name.'"/>
+                            <input type="text" class="form-control" id="first_name" name="first_name" value="'.$user->first_name.'" required=""/>
 
                             <label for="last_name" class="form-control-label">Επώνυμο: </label>
-                            <input type="text" class="form-control" id="last_name" name="last_name" value="'.$user->last_name.'"/>
+                            <input type="text" class="form-control" id="last_name" name="last_name" value="'.$user->last_name.'" required=""/>
 
                             <label for="username" class="form-control-label">Username: </label>
-                            <input type="text" class="form-control" id="username" name="username" value="'.$user->username.'"/>
+                            <input type="text" class="form-control" id="username" name="username" value="'.$user->username.'" required=""/>
 
                             <label for="aem" class="form-control-label">ΑΕΜ: </label>
-                            <input type="text" class="form-control" id="aem" name="aem" value="'.$user->aem.'"/>
+                            <input type="text" class="form-control" id="aem" name="aem" value="'.$user->aem.'" />
 
                             <label for="email" class="form-control-label">Email: </label>
-                            <input type="text" class="form-control" id="email" name="email" value="'.$user->email.'"/>
+                            <input type="text" class="form-control" id="email" name="email" value="'.$user->email.'" required=""/>
 
                             <label for="telephone" class="form-control-label">Τηλέφωνο: </label>
                             <input type="text" class="form-control" id="telephone" name="telephone" value="'.$user->telephone.'"/>
 
-                            <label for="type" class="form-control-label">Τύπος Χρήστη:</label><br/>
-                            <select name="type" id="type"
-                                    class="form-control type" style="width: auto;">
-                                <option value="0"'.($user->type == 0?'selected':'').'>Φοιτητής</option>
-                                <option value="1"'.($user->type == 1?'selected':'').'>Διαχειριστής</option>
+                            <label for="type" class="form-control-label">Επίπεδο Χρήστη:</label><br/>
+                            <select name="type" id="type" required="" class="form-control type" style="width: auto;">
+                                <option value="">Επιλογή Επιπέδου</option>
+                                <option value="4"'.($user->type == 4?'selected':'').'>Φοιτητής</option>
+                                <option value="3"'.($user->type == 3?'selected':'').'>Διαχειριστής</option>
                                 <option value="2"'.($user->type == 2?'selected':'').'>ΟΜ.Ε.Α.</option>
-                                <option value="3"'.($user->type == 3?'selected':'').'>Καθηγητής</option>
+                                <option value="1"'.($user->type == 1?'selected':'').'>Καθηγητής</option>
                             </select>
 
-                            <br/>
+                            <label for="email" class="form-control-label">Κατηγορία Κωδικών Χρήστη:</label>
+                            <select name="user_type" id="user_type" class="form-control" required="" >
+                                <option value="">Επιλογή Κατηγορίας</option>
+                                <option value="icte" '.($user->user_type=='icte'?'selected':'').'>Χρήστης με κωδικούς του arch.icte.uowm.gr</option>
+                                <option value="sso" '.($user->user_type=='sso'?'selected':'').'>Χρήστης με ιδρυματικούς κωδικούς</option>
+                            </select>
+                            <br />
                             <div class="row">
                                 <div class="col-sm-12">
                                     <button class="btn btn-sm btn-primary btn-block" type="submit">Αποθήκευση</button>
                                 </div>
                             </div>
-
                         </form>
                     </div>
                 </div>
@@ -92,6 +96,12 @@ echo '<div class="container-fluid">
         </div>
     </div>
 </div>';
-
+?>
+<script>
+    jQuery(document).ready(function () {
+        jQuery('#edit_user_form').validate();
+    });
+</script>
+<?php
 get_footer();
 ?>

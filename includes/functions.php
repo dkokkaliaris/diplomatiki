@@ -9,6 +9,32 @@ function get_footer() {
     include_once "footer.php";
 }
 
+//Συναρτηση δημ. τυχαιου κωδικου
+function random_string($length)
+{
+    $key = '';
+    $keys = array_merge(range(0, 9), range('a', 'z'));
+
+    for ($i = 0; $i < $length; $i++) {
+        $key .= $keys[array_rand($keys)];
+    }
+
+    return $key;
+}
+
+//Συναρτηση δημ. τυχαιου κωδικου
+function randomPassword($num=10)
+{
+    $alphabet = "abcdefghijklmnopqrstuwxyzABCDEFGHIJKLMNOPQRSTUWXYZ0123456789";
+    $pass = array(); //remember to declare $pass as an array
+    $alphaLength = strlen($alphabet) - 1; //put the length -1 in cache
+    for ($i = 0; $i < $num; $i++) {
+        $n = rand(0, $alphaLength);
+        $pass[] = $alphabet[$n];
+    }
+    return implode($pass); //turn the array into a string
+}
+
 // http://www.catswhocode.com/blog/10-awesome-php-functions-and-snippets
 function cleanInput($input) {
   $search = array(
@@ -38,14 +64,14 @@ function sanitize($input) {
 }
 // http://www.catswhocode.com/blog/10-awesome-php-functions-and-snippets.
 function is_logged_in(){
-    if (!$_SESSION['userid']) {
-        return false;
-    }else{
+    if (isset($_SESSION['userid'] )) {
         return true;
+    }else {
+        return false;
     }
 }
 
-//breadcrumb
+//για την εμφάνιση των προηγούμενων σελίδων στην γραμμή των σελίδων
 function show_breacrumb($breadcrumb){
     $path= '<div class="row breadcrumb">
         <div class="col-sm-12">

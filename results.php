@@ -4,7 +4,6 @@ if (!is_logged_in()) {
     header("Location: ".BASE_URL.'login.php');
     exit;
 }
-get_header();
 
 $limit = 20;
 $adjacents = 5;
@@ -21,7 +20,7 @@ $sortby = 'order by ';
 if (!empty($_REQUEST['sortby'])) {
     $sortby .= sanitize($_REQUEST['sortby']);
 } else {
-    $sortby .= "dk_questionnaire.id";
+    $sortby .= "A.id";
 }
 
 if (!empty($_REQUEST['sorthow'])) {
@@ -30,86 +29,115 @@ if (!empty($_REQUEST['sorthow'])) {
     $sorthow = "desc";
 }
 
+$targetpage = "results.php";    //your file name  (the name of this file)
+$addtosql = '';
+$search_id = isset($_REQUEST['id']) ? sanitize($_REQUEST['id']) : '';
+$lesson = isset($_REQUEST['lesson']) ? sanitize($_REQUEST['lesson']) : '';
+$username = isset($_REQUEST['username']) ? sanitize($_REQUEST['username']) : '';
+$time_begins = isset($_REQUEST['time_begins']) ? sanitize(urldecode($_REQUEST['time_begins'])) : '';
+$time_ends = isset($_REQUEST['time_ends']) ? sanitize(urldecode($_REQUEST['time_ends'])) : '';
 
-$params = array(':id' => $_SESSION['userid']);
-$sql = 'SELECT count(*) FROM dk_questionnaire join dk_answers on dk_questionnaire.id = dk_answers.questionnaire_id where template = 0 and dk_questionnaire.user_id = :id group by dk_questionnaire.id';
-$stmt = $dbh->prepare($sql);
-$stmt->execute($params);
+if (!empty($search_id)) {
+    $addtosql .= " AND A.id = $search_id";
+}
+if (!empty($lesson)) {
+    $addtosql .= " AND C.name LIKE '%$lesson%'";
+}
+if (!empty($username)) {
+    $addtosql .= " AND (B.username LIKE '%$username%' OR B.first_name LIKE '%$username%' OR B.last_name LIKE '%$username%')";
+}
+if (!empty($time_begins)) {
+    $addtosql .= " AND (A.time_begins BETWEEN '$time_begins 00:00:00' AND '$time_begins 23:59:59')";
+}
+if (!empty($time_ends)) {
+    $addtosql .= " AND (A.time_ends BETWEEN '$time_ends 00:00:00' AND '$time_ends 23:59:59')";
+}
 
-$targetpage = "questionnaires.php";    //your file name  (the name of this file)
-
+if($_SESSION['level'] == 1 || $_SESSION['level'] == 2){
+    $params = array();
+    $sql = "SELECT A.*, D.type, B.last_name, B.first_name, C.title AS lesson_title FROM dk_questionnaire A join dk_answers AS D on A.id = D.questionnaire_id JOIN dk_users B ON A.user_id=B.id JOIN dk_lessons C ON A.lesson_id=C.id where template = 0 $addtosql group by A.id $sortby $sorthow  LIMIT $start,$limit;";
+}else{
 // φέρνω όλα τα ερωτηματολόγια που έχουν απαντηθεί και δεν είναι κλειδωμένα
-$params = array(':id' => $_SESSION['userid']);
-$sql = "SELECT dk_questionnaire.*, dk_answers.type FROM dk_questionnaire join dk_answers on dk_questionnaire.id = dk_answers.questionnaire_id where template = 0 and dk_questionnaire.user_id = " . $_SESSION['userid'] . " and (dk_questionnaire.lockedtime is null or dk_questionnaire.lockedtime < NOW()) group by dk_questionnaire.id $sortby $sorthow  LIMIT $start,$limit;";
+    $params = array(':id' => $_SESSION['userid']);
+    $sql = "SELECT A.*, D.type, B.last_name, B.first_name, C.title AS lesson_title FROM dk_questionnaire A join dk_answers AS D on A.id = D.questionnaire_id JOIN dk_users B ON A.user_id=B.id JOIN dk_lessons C ON A.lesson_id=C.id where template = 0 and A.user_id = :id and (A.lockedtime is null or A.lockedtime < NOW()) $addtosql group by A.id $sortby $sorthow  LIMIT $start,$limit;";
+}
 $stmt = $dbh->prepare($sql);
 $stmt->execute($params);
 $results = $stmt->fetchALL();
 $total_pages = $stmt->fetchColumn();
 
+get_header();
 $breadcrumb=array(
-    array('title'=>'Αποτελέσματα Αξιολογήσεων ανά Ερωτηματολόγιο','href'=>'')
+    array('title'=>'Αποτελέσματα Αξιολογήσεων','href'=>'')
 );
 echo '<div class="container-fluid">
     '.show_breacrumb($breadcrumb).'
         <div class="row">
             <div class="col-sm-12">
-                <h3>Αποτελέσματα Αξιολογήσεων ανά Ερωτηματολόγιο</h3>
+                <h3>Αποτελέσματα Αξιολογήσεων</h3>
             </div>
         </div>
         <div class="row">
         <div class="col-sm-12">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th><a href="questionnaires.php?sortby=id&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">#</a></th>
-                <th><a href="questionnaires.php?sortby=title&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Σύντομος Τίτλος</a></th>
-                <th>Μάθημα</th>
-                <th><a href="questionnaires.php?sortby=time_begins&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Ημερομηνία Έναρξης</a></th>
-                <th><a href="questionnaires.php?sortby=time_ends&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Ημερομηνία Λήξης</a></th>
-                <th>Προβολή Αποτελεσμάτων</th>
-            </tr>
-            </thead>
-            <tbody>';
+        <form action="results.php" method="get">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th><a href="results.php?sortby=id&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">ID</a></th>
+                        <th><a href="results.php?sortby=title&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Εκπαιδευτικό Πρόγραμμα</a></th>
+                        <th><a href="results.php?sortby=user_id&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Επιβλέπων Καθηγητής</a></th>
+                        <th><a href="results.php?sortby=time_begins&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Ημερομηνία Έναρξης</a></th>
+                        <th><a href="results.php?sortby=time_ends&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Ημερομηνία Λήξης</a></th>
+                        <th>Συνολικές Αξιολογήσεις</th>
+                        <th>Ενέργειες</th>
+                    </tr>
+                    <tr>
+                        <td><input type="text" class="form-control" placeholder="ID" name="id" id="id" value="'.$search_id.'"/></td>
+                        <td><input type="text" class="form-control" placeholder="Εκπαιδευτικό Πρόγραμμα" name="lesson" id="lesson"  value="'.$lesson.'" /></td>
+                        <td><input type="text" class="form-control" placeholder="Επιβλέπων Καθηγητής" name="username" id="username" value="'.$username.'"/></td>
+                        <td><input type="text" class="form-control" placeholder="Ημερομηνία Έναρξης" name="time_begins" id="time_begins" value="'.$time_begins.'" /></td>
+                        <td><input type="text" class="form-control" placeholder="Ημερομηνία Λήξης" name="time_ends" id="time_ends" value="'.$time_ends.'" /></td>
+                        <td></td>
+                        <td>
+                            <button type="submit" class="btn btn-sm btn-primary">Αναζήτηση</button>
+                        </td>
 
-            foreach ($results as $result) {
-                echo '<tr>
-                    <th scope="row">'.$result->id.'</th>
-                    <td>'.$result->title.'</td>
-                    <td>';
-                        // φέρνω το μάθημα του ερωτηματολογίου
-                        $params = array(':id' => $result->id);
-                        $sql = "SELECT * FROM dk_questionnaire_lessons where questionnaire_id = :id";
-                        $stmt = $dbh->prepare($sql);
-                        $stmt->execute($params);
-                        $lessonQ = $stmt->fetchObject();
+                    </tr>
+                </thead>
+                <tbody>';
 
-                        $params = array(':id' => $lessonQ->lessons_id);
-                        $sql = "SELECT * FROM dk_lessons where id = :id";
-                        $stmt = $dbh->prepare($sql);
-                        $stmt->execute($params);
-                        $lesson = $stmt->fetchObject();
+                foreach ($results as $result) {
+                    echo '<tr>
+                        <th scope="row">'.$result->id.'</th>
+                        <td>'.$result->lesson_title.'</td>
+                        <td>'.$result->first_name.' '.$result->last_name.'</td>
+                        <td>';
+                            if ($result->template == 0)
+                                echo (new DateTime($result->time_begins))->format('d/m/Y H:i');
+                            else echo '-';
+                        echo '</td>
+                        <td>';
+                            if ($result->template == 0)
+                                echo (new DateTime($result->time_ends))->format('d/m/Y H:i');
+                            else echo '-';
+                        echo '</td>
+                        <td>';
+                            $params = array(':id' => $result->id);
+                            $sql = "SELECT user_id FROM dk_answers where questionnaire_id = :id AND question_id IN ( SELECT question_id FROM dk_questionnaire_questions where order_by = 1 )";
+                            $stmt = $dbh->prepare($sql);
+                            $stmt->execute($params);
+                            $count = $stmt->rowCount();
+                            echo $count;
+                        echo '</td>
+                        <td>
+                            <a data-toggle="tooltip" data-placement="bottom" title="Προβολή Αποτελεσμάτων" href="questionnaire_graphs.php?id='.$result->id.'" class="btn btn-warning"><span class="fa fa-area-chart" aria-hidden="true"></span></a>
+                        </td>
+                    </tr>';
+                }
 
-                        echo $lesson->title;
-
-                    echo '</td>
-                    <td>';
-                        if ($result->template == 0)
-                            echo (new DateTime($result->time_begins))->format('d/m/Y H:i');
-                        else echo '-';
-                    echo '</td>
-                    <td>';
-                        if ($result->template == 0)
-                            echo (new DateTime($result->time_ends))->format('d/m/Y H:i');
-                        else echo '-';
-                    echo '</td>
-                    <td>
-                        <a href="questionnaire_graphs.php?id='.$result->id.'" type="button"><span class="fa fa-area-chart" aria-hidden="true"></span></a>
-                    </td>
-                </tr>';
-            }
-
-            echo '</tbody>
-        </table>
+                echo '</tbody>
+            </table>
+        </form>
         </div>
         </div>
         <div class="row">
@@ -122,6 +150,22 @@ echo '<div class="container-fluid">
     echo '</div>
 </div>
 </div>';
+?>
+<script>
+    jQuery('#time_begins').datetimepicker({
+        lang: 'el',
+        timepicker: false,
+        format: 'Y-m-d',
+        formatDate: 'd/m/Y'
+    });
+    jQuery('#time_ends').datetimepicker({
+        lang: 'el',
+        timepicker: false,
+        format: 'Y-m-d',
+        formatDate: 'd/m/Y'
+    });
+</script>
 
+<?php
 get_footer();
 ?>

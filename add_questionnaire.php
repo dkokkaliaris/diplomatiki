@@ -4,18 +4,11 @@ if (!is_logged_in()) {
     header("Location: ".BASE_URL.'login.php');
     exit;
 }
-get_header();
-$breadcrumb=array(
-    array('title'=>'Ερωτηματολόγια','href'=>'questionnaires.php'),
-    array('title'=>'Προσθήκη Νέου Ερωτηματολογίου','href'=>''),
-);
-echo '<div class="container-fluid">
-'.show_breacrumb($breadcrumb);
-
+$alert = '';
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
     // ελέγχω αν ο χρήστης έστειλε κενά πεδία
     if (!isset($_POST['title'], $_POST['description'], $_POST['time_begins'], $_POST['time_ends'], $_POST['lesson']) || ($_POST['title'] == '' || $_POST['description'] == '' || $_POST['time_begins'] == '' || $_POST['time_ends'] == '' || $_POST['lesson'] == '')) {
-        echo "<div class='row'><div class='col-sm-12'><div class='alert alert-danger'>Παρακαλώ συμπληρώστε όλα τα πεδία.</div></div></div>";
+        $alert = "<div class='row'><div class='col-sm-12'><div class='alert alert-danger'>Παρακαλώ συμπληρώστε όλα τα πεδία.</div></div></div>";
     } else {
         $title = sanitize($_POST['title']);
         $description = sanitize($_POST['description']);
@@ -40,13 +33,23 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
                 $stmt = $dbh->prepare($sql);
                 $stmt->execute($params);
             }
-            header("Location: edit_questionnaire.php?id=$new_id");
+            header("Location: edit_questionnaire.php?id=$new_id&status=1");
             exit;
         } else {
-            echo "<div class='row'><div class='col-sm-12'><div class='alert alert-danger'>Η δημιουργία του ερωτηματολογίου δεν πραγματοποιήθηκε με επιτυχία. Παρακαλούμε δοκιμάστε ξανά.</div></div></div>";
+            $alert = "<div class='row'><div class='col-sm-12'><div class='alert alert-danger'>Η δημιουργία του ερωτηματολογίου δεν πραγματοποιήθηκε με επιτυχία. Παρακαλούμε δοκιμάστε ξανά.</div></div></div>";
         }
     }
 }
+
+get_header();
+$breadcrumb=array(
+    array('title'=>'Ερωτηματολόγια','href'=>'questionnaires.php'),
+    array('title'=>'Προσθήκη Νέου Ερωτηματολογίου','href'=>''),
+);
+echo '<div class="container-fluid">
+'.show_breacrumb($breadcrumb);
+
+echo $alert;
 echo '<div class="row">
         <div class="col-lg-6 col-md-8 col-sm-12 col-lg-offset-3 col-md-offset-2">
             <div class="box">
@@ -55,33 +58,32 @@ echo '<div class="row">
                     <h4>Προσθήκη Νέου Ερωτηματολογίου</h4>
                 </div>
             </div>
-            <form action="add_questionnaire.php" method="post">
+            <form action="add_questionnaire.php" method="post" id="add_questionnaire_form" novalidate="">
                 <div class="form-group">
                     <label class="form-control-label" for="title">Τίτλος: </label>
-                    <input type="text" class="form-control" name="title" id="title"/>
+                    <input type="text" class="form-control" name="title" id="title" required=""/>
                 </div>
 
                 <div class="form-group">
                     <label for="lesson" class="form-control-label">Εκπαιδευτικό Πρόγραμμα: </label>
                     <select name="lesson" id="lesson"
-                            class="form-control type" style="width: auto;">
-                        <option value="0">Επιλογή Εκπαιδευτικού Προγράμματος</option>';
+                            class="form-control type" style="width: auto;" required="">
+                        <option value="">Επιλογή Εκπαιδευτικού Προγράμματος</option>';
                         $params = array();
                         if ($_SESSION['level'] == 3){
                             $params= array(':id' => $_SESSION['userid']);
                             $sql = 'SELECT * FROM dk_lessons where user_id = :id';
                         }else
                             // αν ειμαι διαχειριστής ή ΟΜΕΑ φέρνω όλα τα μαθήματα με το όνομα του διδάσκοντα
-                            $stmt = $dbh->prepare('SELECT dk_lessons.id,dk_lessons.title,dk_users.first_name,dk_users.last_name FROM dk_lessons JOIN dk_users ON dk_users.id=dk_lessons.user_id');
+                            $sql = 'SELECT dk_lessons.id,dk_lessons.title,dk_users.first_name,dk_users.last_name FROM dk_lessons JOIN dk_users ON dk_users.id=dk_lessons.user_id';
 
                         $stmt = $dbh->prepare($sql);
-                        $stmt->execute($params);;
+                        $stmt->execute($params);
 
                         $results = $stmt->fetchALL();
                         foreach ($results as $result) {
-                            // echo "<option value=\"$result->id\">$result->title</option>";
                             echo "<option value='$result->id'>$result->title".
-                                (!empty($result->last_name)?$result->first_name .' '. $result->last_name:'').
+                                (!empty($result->last_name)?' ('.$result->first_name .' '. $result->last_name.')':'').
                                 "</option>";
                         }
                     echo '
@@ -95,12 +97,12 @@ echo '<div class="row">
 
                 <div class="form-group" id="date_start_layout">
                     <label for="time_begins" class="form-control-label">Ημερομηνία Έναρξης: </label>
-                    <input type="text" class="form-control" name="time_begins" id="time_begins" autocomplete="off"/>
+                    <input type="text" class="form-control" name="time_begins" id="time_begins" autocomplete="off" required=""/>
                 </div>
 
                 <div class="form-group" id="date_ends_layout">
                     <label for="time_ends" class="form-control-label">Ημερομηνία Λήξης: </label>
-                    <input type="text" class="form-control" name="time_ends" id="time_ends" autocomplete="off"/>
+                    <input type="text" class="form-control" name="time_ends" id="time_ends" autocomplete="off" required=""/>
                 </div>';
 
 
@@ -112,7 +114,7 @@ echo '<div class="row">
                 $total = $stmt->rowCount();
                 if ($total > 0) {
                     echo '<div class="form-group">
-                        <label for="date_ends" class="form-control-label">Επιλογή Καναλιού:</label><br/>';
+                        <label for="date_ends" class="form-control-label">Επιλογή Καναλιών Εισόδου:</label><br/>';
 
                         foreach ($results as $result) {
                             echo "
@@ -129,15 +131,35 @@ echo '<div class="row">
 </div>';
 ?>
 <script>
+//καλει το datepicker και εφαρμοζει το πεδίο της ημερομηνιας
     jQuery('#time_begins').datetimepicker({
+        minDate: new Date(),
         lang: 'el',
         timepicker: true,
-        format: 'd/m/Y H:i'
+        format: 'd/m/Y H:i',
+        onSelectDate: function( ct ){
+            //οταν επιλεξεις ημερομηνια πηγαινε στην ημερομηνια ληξης και βαλε ελεχιστη ημερομηνια αυτη που επιλέχθηκε και κανει έλεγχο
+            jQuery('#time_ends').datetimepicker({minDate: new Date(ct)});
+        },
+        onSelectTime: function( ct ){
+            jQuery('#time_ends').datetimepicker({minDate: new Date(ct)});
+        }
     });
     jQuery('#time_ends').datetimepicker({
+        minDate: new Date(),
         lang: 'el',
         timepicker: true,
-        format: 'd/m/Y H:i'
+        format: 'd/m/Y H:i',
+        onSelectDate: function( ct ){
+            jQuery('#time_begins').datetimepicker({maxDate: new Date(ct)});
+        },
+        onSelectTime: function( ct ){
+            jQuery('#time_begins').datetimepicker({maxDate: new Date(ct)});
+        }
+
+    });
+    jQuery(document).ready(function () {
+        jQuery('#add_questionnaire_form').validate();
     });
 </script>
 

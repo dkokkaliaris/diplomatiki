@@ -3,13 +3,7 @@ include_once "includes/init.php";
 if (!is_logged_in()) {
     header("Location: ".BASE_URL.'login.php');
     exit;
-}else{
-    if($_SESSION['level']>2){
-       header("Location: ".BASE_URL.'index.php');
-        die();
-    }
 }
-get_header();
 
 if (isset($_GET['action']) && sanitize($_GET['action']) == "delete") {
     $id = sanitize($_GET['id']);
@@ -21,7 +15,7 @@ if (isset($_GET['action']) && sanitize($_GET['action']) == "delete") {
 $limit = 20;
 $adjacents = 5;
 if (isset($_GET['page'])) {
-    $page = filter_var($_GET['page'], FILTER_SANITIZE_NUMBER_INT);
+    $page = sanitize($_GET['page']);
     $start = ($page - 1) * $limit;            //first item to display on this page
 } else {
     $page = 1;
@@ -31,7 +25,7 @@ if (isset($_GET['page'])) {
 $sortby = 'order by ';
 // για ταξινόμηση
 if (!empty($_REQUEST['sortby'])) {
-    $sortby .= sanitize($_REQUEST['sortby']);
+    $sortby .= 'dk_questionnaire.'.sanitize($_REQUEST['sortby']);
 } else {
     $sortby .= "dk_lessons.id";
 }
@@ -42,28 +36,45 @@ if (!empty($_REQUEST['sorthow'])) {
     $sorthow = "desc";
 }
 
-
-$stmt = $dbh->prepare( "SELECT count(*) FROM dk_lessons join dk_questionnaire_lessons on dk_questionnaire_lessons.lessons_id =  dk_lessons.id GROUP by dk_questionnaire_lessons.lessons_id;" );
-$stmt->execute();
-$total_pages = $result->fetchColumn();
-
-
-/* Setup page vars for display. */
-/*if ($page == 0) $page = 1;                    //if no page var is given, default to 1.
-$prev = $page - 1;                            //previous page is page - 1
-$next = $page + 1;                            //next page is page + 1
-$lastpage = ceil($total_pages / $limit);        //lastpage is = total pages / items per page, rounded up.
-$lpm1 = $lastpage - 1;*/
 $targetpage = "evaluation.php";    //your file name  (the name of this file)
-
+$id = isset($_REQUEST['id']) ? sanitize($_REQUEST['id']) : '';
+$title = isset($_REQUEST['title']) ? sanitize($_REQUEST['title']) : '';
+$lesson = isset($_REQUEST['lesson']) ? sanitize($_REQUEST['lesson']) : '';
+$last_editor = isset($_REQUEST['last_editor']) ? sanitize($_REQUEST['last_editor']) : '';
+$username = isset($_REQUEST['username']) ? sanitize($_REQUEST['username']) : '';
+$time_begins = isset($_REQUEST['time_begins']) ? sanitize(urldecode($_REQUEST['time_begins'])) : '';
+$time_ends = isset($_REQUEST['time_ends']) ? sanitize(urldecode($_REQUEST['time_ends'])) : '';
+$addtosql="";
+if (!empty($id)) {
+    $addtosql .= " AND dk_questionnaire.id LIKE '%$id%'";
+}
+if (!empty($title)) {
+    $addtosql .= " AND dk_questionnaire.title LIKE '%$title%'";
+}
+if (!empty($lesson)) {
+    $addtosql .= " AND dk_lessons.title LIKE '%$lesson%'";
+}
+if (!empty($username)) {
+    $addtosql .= " AND (dk_users.username LIKE '%$username%' OR dk_users.first_name LIKE '%$username%' OR dk_users.last_name LIKE '%$username%')";
+}
+if (!empty($time_begins)) {
+    $addtosql .= " AND (dk_questionnaire.time_begins BETWEEN '$time_begins 00:00:00' AND '$time_begins 23:59:59')";
+}
+if (!empty($time_ends)) {
+    $addtosql .= " AND (dk_questionnaire.time_ends BETWEEN '$time_ends 00:00:00' AND '$time_ends 23:59:59')";
+}
+$sql = "SELECT count(*) FROM dk_lessons join dk_questionnaire on dk_lessons.id = dk_questionnaire.lesson_id join dk_users on dk_users.id = dk_lessons.user_id where dk_questionnaire.time_begins < NOW() and dk_questionnaire.time_ends > NOW() $addtosql GROUP by dk_questionnaire.lesson_id;";$stmt = $dbh->prepare($sql);
+$stmt->execute();
+$total_pages = $stmt->fetchColumn();
+// φέρνω όλα τα μαθήματα
+$sql = "SELECT dk_lessons.title AS lesson_title, dk_questionnaire.*, dk_users.first_name, dk_users.last_name FROM dk_lessons join dk_questionnaire on dk_lessons.id = dk_questionnaire.lesson_id join dk_users on dk_users.id = dk_lessons.user_id where dk_questionnaire.time_begins < NOW() and dk_questionnaire.time_ends > NOW() $addtosql GROUP by dk_questionnaire.lesson_id $sortby $sorthow LIMIT $start,$limit;";
+$stmt = $dbh->prepare($sql);
+$stmt->execute();
+$results = $stmt->fetchALL();
+get_header();
 $breadcrumb=array(
     array('title'=>'Αξιολόγηση Μαθημάτων','href'=>'')
 );
-
-// φέρνω όλα τα μαθήματα
-$stmt = $dbh->prepare("SELECT * FROM dk_lessons join dk_questionnaire_lessons on dk_questionnaire_lessons.lessons_id =  dk_lessons.id join dk_questionnaire on dk_questionnaire_lessons.questionnaire_id = dk_questionnaire.id where dk_questionnaire.time_begins < NOW() and dk_questionnaire.time_ends > NOW() GROUP by dk_questionnaire_lessons.lessons_id $sortby $sorthow LIMIT $start,$limit;");
-$stmt->execute();
-$results = $stmt->fetchALL();
 echo '<div class="container-fluid">
     '.show_breacrumb($breadcrumb).'
     <div class="row">
@@ -73,100 +84,93 @@ echo '<div class="container-fluid">
     </div>
     <div class="row">
         <div class="col-sm-12">
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th><a href="evaluation.php?sortby=title&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Τίτλος</a></th>
-                <th>Αξιολόγηση</th>
-            </tr>
-            </thead>
-            <tbody>';
-                foreach ($results as $result) {
-                    echo '<tr>
-                        <td>'.$result->title.'</td>
-                        <td><a href="evaluate_questionnaire.php?id='.$result->questionnaire_id.'">
-                            <i class="fa fa-list-alt" style="color: darkgreen;" aria-hidden="true"></i></a>
-                        </td>
-                    </tr>';
-                }
-            echo '</tbody>
-        </table>
+            <form action="evaluation.php" method="get">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th><a href="evaluation.php?sortby=id&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">ID</a></th>
+                            <th><a href="evaluation.php?sortby=title&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Εκπαιδευτικό Πρόγραμμα</a></th>
+                            <th><a href="evaluation.php?sortby=title&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Τίτλος</a></th>
+                            <th><a href="evaluation.php?sortby=user_id&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Επιβλέπων Καθηγητής</a></th>
+                            <th><a href="evaluation.php?sortby=time_begins&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Ημερομηνία Έναρξης</a></th>
+                            <th><a href="evaluation.php?sortby=time_ends&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Ημερομηνία Λήξης</a></th>
+                            <th>Ενέργειες</th>
+                        </tr>
+                        <tr>
+                            <td><input type="text" class="form-control" placeholder="ID" name="id" id="id" value="'.$id.'"/></td>
+                            <td><input type="text" class="form-control" placeholder="Εκπαιδευτικό Πρόγραμμα" name="lesson" id="lesson" value="'.$lesson.'"/></td>
+                            <td><input type="text" class="form-control" placeholder="Τίτλος" name="title" id="title" value="'.$title.'"/></td>
+                            <td><input type="text" class="form-control" placeholder="Επιβλέπων Καθηγητής" name="username" id="username" value="'.$username.'"/></td>
+                            <td><input type="text" class="form-control" placeholder="Ημερομηνία Έναρξης" name="time_begins" id="time_begins" value="'.$time_begins.'" /></td>
+                            <td><input type="text" class="form-control" placeholder="Ημερομηνία Λήξης" name="time_ends" id="time_ends" value="'.$time_ends.'" /></td>
+
+                            <td>
+                                <button type="submit" class="btn btn-sm btn-primary">Αναζήτηση</button>
+                            </td>
+
+                        </tr>
+                    </thead>
+                    <tbody>';
+                        foreach ($results as $result) {
+                            echo '<tr>
+                                <th scope="row">'.$result->id.'</th>
+                                <td>';
+                                    echo $result->lesson_title;
+									echo '</td>
+                                <td>'.$result->title.'</td>
+                                <td>';
+                                    // φέρνω το μάθημα του ερωτηματολογίου
+                                    echo $result->first_name.' '.$result->last_name;
+                                echo '</td>
+                                <td>';
+                                    if ($result->template == 0)
+                                        echo (new DateTime($result->time_begins))->format('d/m/Y H:i');
+                                    else echo '-';
+                                echo '</td>
+                                <td>';
+                                    if ($result->template == 0)
+                                        echo (new DateTime($result->time_ends))->format('d/m/Y H:i');
+                                    else echo '-';
+                                echo '</td>
+                                <td>
+                                    <a data-toggle="tooltip" data-placement="bottom" title="Προβολή Ερωτηματολογίου" href="evaluate_questionnaire.php?id='.$result->id.'"><span class="fa fa-list-alt" style="color: darkgreen;" aria-hidden="true"></span></a>
+                                </td>
+                            </tr>';
+                        }
+                    echo '</tbody>
+                </table>
+            </form>
         </div>
     </div>
     <div class="row">
         <div class="col-sm-12">';
         // http://aspektas.com/blog/really-simple-php-pagination/
         // ================================== ΣΕΛΙΔΟΠΟΙΗΣΗ ============================================
-        /*$querystring = "";
-        foreach ($_GET as $key => $value) {
-            if ($key != "page") $querystring .= "&amp;$key=" . $value;
-        }
-
-        $pagination = "";
-        if ($lastpage > 1) {
-            $pagination .= "<ul class=\"pagination\">";
-            //previous button
-            if ($page > 1)
-                $pagination .= "<li><a href=\"$targetpage?page=$prev$querystring\">Πίσω</a></li>";
-
-            //pages
-            if ($lastpage < 7 + ($adjacents * 2))    //not enough pages to bother breaking it up
-            {
-                for ($counter = 1; $counter <= $lastpage; $counter++) {
-                    if ($counter == $page)
-                        $pagination .= "<li><span class=\"current\">$counter</span></li>";
-                    else
-                        $pagination .= "<li><a href=\"$targetpage?page=$counter$querystring\">$counter</a></li>";
-                }
-            } elseif ($lastpage > 5 + ($adjacents * 2))    //enough pages to hide some
-            {
-                //close to beginning; only hide later pages
-                if ($page < 1 + ($adjacents * 2)) {
-                    for ($counter = 1; $counter < 2 + ($adjacents * 2); $counter++) {
-                        if ($counter == $page)
-                            $pagination .= "<li><span class=\"current\">$counter</span></li>";
-                        else
-                            $pagination .= "<li><a href=\"$targetpage?page=$counter$querystring\">$counter</a></li>";
-                    }
-                    $pagination .= "<li><a href=\"$targetpage?page=$lpm1$querystring\">$lpm1</a></li>";
-                    $pagination .= "<li><a href=\"$targetpage?page=$lastpage$querystring\">$lastpage</a></li>";
-                } //in middle; hide some front and some back
-                elseif ($lastpage - ($adjacents * 2) > $page && $page > ($adjacents * 2)) {
-                    $pagination .= "<li><a href=\"$targetpage?page=1$querystring\">1</a></li>";
-                    $pagination .= "<li><a href=\"$targetpage?page=2$querystring\">2</a></li>";
-                    for ($counter = $page - $adjacents; $counter <= $page + $adjacents; $counter++) {
-                        if ($counter == $page)
-                            $pagination .= "<li><span class=\"current\">$counter</span></li>";
-                        else
-                            $pagination .= "<li><a href=\"$targetpage?page=$counter$querystring\">$counter</a></li>";
-                    }
-                    $pagination .= "<li><a href=\"$targetpage?page=$lpm1$querystring\">$lpm1</a></li>";
-                    $pagination .= "<li><a href=\"$targetpage?page=$lastpage$querystring\">$lastpage</a></li>";
-                } //close to end; only hide early pages
-                else {
-                    $pagination .= "<li><a href=\"$targetpage?page=1$querystring\">1</a></li>";
-                    $pagination .= "<li><a href=\"$targetpage?page=2$querystring\">2</a></li>";
-                    for ($counter = $lastpage - (2 + ($adjacents * 2)); $counter <= $lastpage; $counter++) {
-                        if ($counter == $page)
-                            $pagination .= "<li><span class=\"current\">$counter</span></li>";
-                        else
-                            $pagination .= "<li><a href=\"$targetpage?page=$counter$querystring\">$counter</a></li>";
-                    }
-                }
-            }
-
-            //next button
-            if ($page < $counter - 1)
-                $pagination .= "<li><a href=\"$targetpage?page=$next$querystring\">Επόμενο</a></li>";
-            $pagination .= "</ul>";
-            echo $pagination;
-        }*/
         pagination($total_pages, $_GET, $targetpage);
         // ================================== ΣΕΛΙΔΟΠΟΙΗΣΗ ============================================
     echo '
     </div>
 </div>
 </div>';
+?>
+<script>
+    jQuery('#time_begins').datetimepicker({
+        lang: 'el',
+        timepicker: false,
+        format: 'Y-m-d',
+        formatDate: 'd/m/Y'
+    });
+    jQuery('#time_ends').datetimepicker({
+        lang: 'el',
+        timepicker: false,
+        format: 'Y-m-d',
+        formatDate: 'd/m/Y'
+    });
+    jQuery(document).ready(function () {
+        jQuery('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
 
+<?php
 get_footer();
 ?>
