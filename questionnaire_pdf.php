@@ -52,8 +52,10 @@ $stmt->execute($params);
 $department = $stmt->fetchObject();
 $pdf->Cell(0, 5, 'Τμήμα: '.$department->name , 0, 1, 'C');
 $pdf->Ln(2);
+
 $pdf->Cell(0, 5, 'Ημερομηνία Εκτύπωσης: '.date("m/Y") , 0, 1, 'C');//ημερομηνία
 $pdf->Ln(10);
+
 $pdf->SetFont('dejavusans', '', 10);
 
 // φέρνω όλα τα ερωτηματολόγια
@@ -68,7 +70,7 @@ $pos_i = 0;
 foreach ($result_questions as $q) {$pos_i++;
     $pdf->Cell('', 5, $pos_i.'. '.$q->question);
     $pdf->Ln(6);
-    if($q->type=='radio'||$q->type=='check'){
+    if( $q->type=='radio' || $q->type=='check' ){
         $params = array(':id' => $q->id);
         $sql = 'SELECT dk_question_options.pick FROM dk_question_options INNER JOIN dk_question ON dk_question.id=dk_question_options.question_id WHERE dk_question.id = :id ';
         $stmt = $dbh->prepare($sql);
@@ -76,17 +78,16 @@ foreach ($result_questions as $q) {$pos_i++;
         $options = $stmt->fetchALL();
         foreach ($options as $op) {
             if($q->type=='radio'){
-                $pdf->RadioButton('id_'.$q->ID, 5,  array('readonly' => 'true'), array(), $op->pick);
+                $pdf->RadioButton('id_'.$q->id, 5,  array('readonly' => 'true'), array(), $op->pick);
             }else{
-                $pdf->CheckBox('id_'.$q->ID, 5, false,  array('readonly' => 'true'), array(), $op->pick);
+                $pdf->CheckBox('id_'.$q->id, 5, false,  array('readonly' => 'true'), array(), $op->pick);
             }
             $pdf->Cell(20, 5, $op->pick);
         }
     }else{
-        $pdf->TextField('id_'.$q->ID, '', '', array('multiline'=>true,'readonly' => 'true'), array());
+        $pdf->TextField('id_'.$q->id, '', '', array('multiline'=>true,'readonly' => 'true'), array());
         $pdf->Ln(10);
     }
     $pdf->Ln(10);
 }
-
-$pdf->Output('Questionnaire.pdf', 'I'); //Ετοιμος κώδικας από TCPDF
+$pdf->Output('Questionnaire.pdf', 'I'); //Κώδικας από TCPDF

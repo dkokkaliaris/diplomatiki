@@ -194,6 +194,7 @@ echo '<div class="container-fluid">
                         $stmt->execute($params);
                         $questionOptions = $stmt->fetchAll();
 
+
                         echo '<div class="table-row">
                             <div class="row">
                                 <div class="col-md-6 col-sm-12"><strong>'. ++$questionNo . '. ' . $questionData->question.'</strong>

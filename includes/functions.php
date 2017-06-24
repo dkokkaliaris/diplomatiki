@@ -71,6 +71,10 @@ function is_logged_in(){
     }
 }
 
+function is_set($value){
+    return isset($_SESSION[$value])? $value : '';
+}
+
 //για την εμφάνιση των προηγούμενων σελίδων στην γραμμή των σελίδων
 function show_breacrumb($breadcrumb){
     $path= '<div class="row breadcrumb">

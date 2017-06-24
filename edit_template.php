@@ -403,9 +403,7 @@ echo '<div class="container-fluid">
 </div>';
 ?>
     <script>
-
         jQuery(document).ready(function () {
-
             $(function () {
                 $('#edit_tamplate_form').validate();
                 $("#all_q").sortable();
@@ -474,7 +472,6 @@ echo '<div class="container-fluid">
                 e.preventDefault();
                 if($('#content-questions').valid()){
                     var data = new FormData();
-                    //data.append('file', $('#file')[0].files[0]);
                     data.append('mode', "add_question");
                     data.append('form', jQuery('#content-questions').serialize());
                     data.append('type', jQuery('#type-q').val());
@@ -591,6 +588,7 @@ echo '<div class="container-fluid">
             jQuery('#type-q-edit').on('change', function () {
                 jQuery('.hidden_block').hide();
                 var $value = jQuery(this).val();
+
                 if ($value == 'text' || $value == 'number'){
                     jQuery('#choices_container-edit').fadeIn();
                     jQuery('#type-multi-q-edit').fadeIn();
@@ -784,14 +782,10 @@ echo '<div class="container-fluid">
 
         $(function () {
             var array = [];
-
             $(".selection").on('click', function () {
-
                 var questionnaireId = $(this).attr("data-id");
-
                 if ($(this).hasClass('selected')) {
                     $(this).removeClass('selected');
-
                     $.each(array, function (i) {
                         if (array[i] === questionnaireId) {
                             array.splice(i, 1);

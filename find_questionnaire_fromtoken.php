@@ -21,3 +21,4 @@ if ($questionnaire != null && $tokenResult->used == 0)
     header("Location: /questionnaire/evaluate_questionnaire.php?id=$questionnaire->id&token=$token");
 else header("Location: /questionnaire/login.php");
 exit();
+?>

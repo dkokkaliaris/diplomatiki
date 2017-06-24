@@ -42,6 +42,10 @@ $stmt->execute($params);
 $user = $stmt->fetchObject();
 
 if ($_SERVER['REQUEST_METHOD'] == "POST") {
+
+    $_SESSION['evaluate_'.$id] = $_POST;
+    print_r($_POST);
+    print_r($_SESSION['evaluate_'.$id]);
     $params = array(':id' => $id);
     $sql = "SELECT * FROM dk_questionnaire_questions where questionnaire_id = :id";
     $stmt = $dbh->prepare($sql);

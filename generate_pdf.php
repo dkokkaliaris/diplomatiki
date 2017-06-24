@@ -60,8 +60,6 @@ foreach ($results as $result) {$i++;
 
 $html .= '</table>';
 
-//Αρχή Ετοιμος κώδικας από TCPDF
-//$pdf->writeHTML($html, true, false, true, false, '');
+//Κώδικας από TCPDF
 $pdf->writeHTMLCell(300, 0, 3, 5, $html);
 $pdf->Output('Print_Tokens.pdf', 'I');
-//Τέλος ετοιμος κώδικας από TCPDF

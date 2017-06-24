@@ -373,6 +373,8 @@ echo '<div class="container-fluid">
             // ================================== ΣΕΛΙΔΟΠΟΙΗΣΗ ============================================
            pagination($total_pages, $_GET, $targetpage);
             // ================================== ΣΕΛΙΔΟΠΟΙΗΣΗ ============================================
+
+
         echo'</div>
     </div>
 </div>';
@@ -546,6 +548,7 @@ jQuery(document).ready(function () {
                     data: data,
                     success: function (data, textStatus, XMLHttpRequest) {
                         console.log(data);
+
 
                         var options = "";
                         for (var i = 0; i < data['options'].length; i++) {

@@ -276,7 +276,6 @@ echo '<div id="simpleQuestion" class="modal fade" tabindex="-1" role="dialog" ar
                                         </div>
                                     </div>
                                     <br/>
-
                                 </form>
                             </div>
                         </div>
@@ -628,7 +627,6 @@ echo '<div class="container-fluid">
                                 questionnaire_id: jQuery('#questionnaire_id').val()
                             },
                             success: function (data, textStatus, XMLHttpRequest) {
-                                //console.log(data);
                             },
                             error: function (MLHttpRequest, textStatus, errorThrown) {
                                 alert(errorThrown);
@@ -765,6 +763,7 @@ echo '<div class="container-fluid">
                                 }
                             }
                             pos_q ++;
+
                             jQuery('.questions').append('<li class="ui-state-default alert-success"><input type="hidden" name="order[]" value="' + value['question']['id'] + '" /><div class="row"><div class="col-sm-1">' + pos_q + '</div><div class="col-sm-3">' + value['question']['question'] + '</div><div class="col-sm-2">' + value['question']['type'] + '</div><div class="col-sm-4">' + options + '</div><div class="col-sm-2"><div data-id="' + value['question']['id'] + '" class="btn btn-success edit_q btn-sm" data-toggle="tooltip" data-placement="bottom" title="Επεξεργασία"><span class="fa fa-pencil" aria-hidden="true"></span></div> <div data-id="' + value['question']['id'] + '" class="btn btn-danger remove_q btn-sm" data-toggle="tooltip" data-placement="bottom" title="Διαγραφή"><span class="fa fa-trash-o" aria-hidden="true"></span></div></div></div></div>');
                         });
                         $('#template-questions-from-questionnaire tr.selection').removeClass('selected');
@@ -1149,7 +1148,6 @@ echo '<div class="container-fluid">
                     $(this).addClass('selected');
                 }
                 $('.template_questions'+$list).val(array.toString());
-                //console.log(array.toString());
             });
         });
     </script>

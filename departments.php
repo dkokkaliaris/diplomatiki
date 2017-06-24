@@ -11,7 +11,7 @@ if (!is_logged_in()) {
 }
 
 $alert = '';
-if ($_GET['del'] && sanitize($_GET['del'])>0) {
+if (isset($_GET['del']) && sanitize($_GET['del'])>0) {
     $del = sanitize($_GET['del']);
     $params = array(':id' => $del);
     $sql = 'DELETE FROM dk_departments WHERE id = :id';
@@ -20,7 +20,7 @@ if ($_GET['del'] && sanitize($_GET['del'])>0) {
     $alert .= "<div class='alert alert-success'>Η διαγραφή του τμήματος πραγματοποιήθηκε με επιτυχία.</div>";
 }
 
-if ($_GET['a'] && sanitize($_GET['a'])>0) {
+if (isset($_GET['a']) && sanitize($_GET['a'])>0) {
     $alert .= "<div class='alert alert-success'>Η αλλαγή των στοιχείων του τμήματος πραγματοποιήθηκε με επιτυχία.</div>";
 }
 
@@ -81,7 +81,7 @@ echo '<div id="newDepartment" class="modal fade" tabindex="-1" role="dialog" ari
                         <br/><br/>
                         <div class="row">
                             <div class="col-sm-12 text-sm-right">
-                                <button id="add_simple" class="btn btn-primary btn-sm">Εισαγωγή</button>
+                                <button id="add_simple" class="btn btn-primary btn-sm">Αποθήκευση</button>
                             </div>
                         </div>
                         <br/>
@@ -96,7 +96,7 @@ echo '<div class="container-fluid">
     <div class="row">
         <div class="col-sm-12">'.$alert.'
             <h3>Διαχείριση Τμημάτων
-                <a class="btn btn-primary btn-sm pull-right" data-toggle="modal" data-target="#newDepartment">Προσθήκη Νέου Τμήματος</a>
+                <a class="btn btn-primary btn-sm pull-right new-dep" data-toggle="modal" data-target="#newDepartment">Προσθήκη Νέου Τμήματος</a>
             </h3>
         </div>
     </div>
@@ -140,7 +140,7 @@ echo '<div class="container-fluid">
                               <td>' . $user->id . '</td>
                               <td id="nameDepartment-' . $user->id . '">' . $user->name . '</td>
                               <td><button class="btn btn-sm btn-success edit_q" data-id="' . $user->id . '">
-                                <span class="fa fa-pencil" aria-hidden="true"></span></button> <a onclick=\'return confirm("Θέλετε να διαγράψετε το τμήμα;")\' class="btn btn-sm btn-danger" href="departments.php?del=' . $user->id . '"><span class="fa fa-trash-o" aria-hidden="true"></span></a></td>
+                                <span class="fa fa-pencil" aria-hidden="true"></span></button> <a onclick=\'return confirm("Είστε σιγουρος ότι θέλετε να διαγράψετε το τμήμα;")\' class="btn btn-sm btn-danger" href="departments.php?del=' . $user->id . '"><span class="fa fa-trash-o" aria-hidden="true"></span></a></td>
                           </tr>';
                     }
 
@@ -157,6 +157,10 @@ echo '<div class="container-fluid">
 </div>';?>
 <script>
     jQuery(document).ready(function () {
+        jQuery('.new-dep').on('click', function(){
+            jQuery(".modal-title").html('Προσθήκη Νέου Τμήματος');
+        });
+
         $('#new-department').on('submit', (function (e) {
             e.preventDefault();
             if($('#new-department').valid()){
@@ -195,7 +199,7 @@ echo '<div class="container-fluid">
                         success: function (data, textStatus, XMLHttpRequest) {
                             console.log(data);
 
-                            $('.table').append('<tr><td>' + data['id'] + '</td><td>' + data['name'] + '</td><td><a class="btn btn-sm btn-success" href="departments.php?id=' + data['id'] + '"><span class="fa fa-pencil" aria-hidden="true"></span></a> <a onclick=\'return confirm("Διαγραφή")\' class="btn btn-sm btn-danger" href="departments.php?del=' + data['id'] + '"><span class="fa fa-trash-o" aria-hidden="true"></span></a></td></tr>');
+                            $('.table').append('<tr><td>' + data['id'] + '</td><td>' + data['name'] + '</td><td><a class="btn btn-sm btn-success" href="departments.php?id=' + data['id'] + '"><span class="fa fa-pencil" aria-hidden="true"></span></a> <a onclick=\'return confirm("Είστε σίγουρος ότι θέλετε να διαγράψετε το τμήμα;")\' class="btn btn-sm btn-danger" href="departments.php?del=' + data['id'] + '"><span class="fa fa-trash-o" aria-hidden="true"></span></a></td></tr>');
 
                             jQuery('#newDepartment .close').click();
                         }, error: function (jqXHR, textStatus, errorThrown) {
@@ -214,7 +218,12 @@ echo '<div class="container-fluid">
             var nameElement = jQuery("#nameDepartment-"+id).html();
             jQuery("#department_name").val(nameElement);
             jQuery("#department_id").val(id);
+            jQuery(".modal-title").html('Επεξεργασία Τμήματος');
             jQuery("#newDepartment").modal('show');
+        });
+
+        jQuery('#newDepartment').on('hidden.bs.modal', function (e) {
+            jQuery('#department_name').val('');
         });
     });
 </script>

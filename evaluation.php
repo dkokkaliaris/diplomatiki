@@ -44,7 +44,7 @@ $last_editor = isset($_REQUEST['last_editor']) ? sanitize($_REQUEST['last_editor
 $username = isset($_REQUEST['username']) ? sanitize($_REQUEST['username']) : '';
 $time_begins = isset($_REQUEST['time_begins']) ? sanitize(urldecode($_REQUEST['time_begins'])) : '';
 $time_ends = isset($_REQUEST['time_ends']) ? sanitize(urldecode($_REQUEST['time_ends'])) : '';
-
+$addtosql="";
 if (!empty($id)) {
     $addtosql .= " AND dk_questionnaire.id LIKE '%$id%'";
 }

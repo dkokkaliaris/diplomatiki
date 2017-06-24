@@ -67,7 +67,7 @@ $total_pages = $stmt->fetchColumn();
 
 $targetpage = "lessons.php";    //your file name  (the name of this file)
 $addtosql = "";
-$id = isset($_REQUEST['id']) ? filter_var($_REQUEST['id'], FILTER_SANITIZE_STRING) : '';
+$id = isset($_REQUEST['id']) && !isset($_GET['action']) ? filter_var($_REQUEST['id'], FILTER_SANITIZE_STRING) : '';
 $title = isset($_REQUEST['title']) ? filter_var($_REQUEST['title'], FILTER_SANITIZE_STRING) : '';
 $username = isset($_REQUEST['username']) ? filter_var($_REQUEST['username'], FILTER_SANITIZE_STRING) : '';
 $department = isset($_REQUEST['department']) ? filter_var($_REQUEST['department'], FILTER_SANITIZE_STRING) : '';

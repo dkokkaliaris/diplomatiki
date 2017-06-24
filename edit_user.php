@@ -72,9 +72,9 @@ echo '<div class="container-fluid">
                             <select name="type" id="type" required="" class="form-control type" style="width: auto;">
                                 <option value="">Επιλογή Επιπέδου</option>
                                 <option value="4"'.($user->type == 4?'selected':'').'>Φοιτητής</option>
-                                <option value="3"'.($user->type == 3?'selected':'').'>Διαχειριστής</option>
+                                <option value="3"'.($user->type == 3?'selected':'').'>Καθηγητής</option>
                                 <option value="2"'.($user->type == 2?'selected':'').'>ΟΜ.Ε.Α.</option>
-                                <option value="1"'.($user->type == 1?'selected':'').'>Καθηγητής</option>
+                                <option value="1"'.($user->type == 1?'selected':'').'>Διαχειριστής</option>
                             </select>
 
                             <label for="email" class="form-control-label">Κατηγορία Κωδικών Χρήστη:</label>

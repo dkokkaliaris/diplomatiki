@@ -418,7 +418,6 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
             $stmt->execute($params);
         }
 
-
         //Στο τελευταιο κομματι προετοιμαζω τα δεδομενα που θα απαντησει το ajax.
         //epistrofh stoixeiwn gia na topo8eth8oun sto pinaka emfganishs olwn twn erwthsewn
         $params = array(':id' => $new_id);

@@ -194,15 +194,15 @@ echo '<div class="container-fluid">
                         echo '</td>
                         <td>';
                             $flag_btns = true;
-                            if($_SESSION['level']!=1 &&$_SESSION['userid']==$result->user_id && $result->lockedtime>date('Y-m-d H:i:s')&& !empty($flag_btns)){
+                            if($_SESSION['level']==3 &&$_SESSION['userid']==$result->user_id && $result->lockedtime>date('Y-m-d H:i:s')&& !empty($flag_btns)){//αν ειναι ο καθηγητης του ερωτηματολογίου
                                 $flag_btns = false;
                             }
                             if($flag_btns){
                                 echo '<button data-toggle="tooltip" data-placement="bottom" title="Αντιγραφή '.$result->title.'" class="btn btn-sm btn-info dublicate" type="button" value="'.$result->id.'"><i class="fa fa-clone" aria-hidden="true"></i></button>
                                 <a data-toggle="tooltip" data-placement="bottom" title="Προβολή '.$result->title.'" class="btn btn-sm btn-warning" target="_blank" href="questionnaire_pdf.php?id='.$result->id.'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>
-                                <a data-toggle="tooltip" data-placement="bottom" title="Επεξεργασία '.$result->title.'" class="btn btn-sm btn-success" href="edit_questionnaire.php?id='.$result->id.'"><span class="fa fa-pencil" aria-hidden="true"></span></a>
-                                <a data-toggle="tooltip" data-placement="bottom" title="Διαγραφή '.$result->title.'" data-id="'.$result->id.'" class="btn btn-sm btn-danger remove-item" href="questionnaires.php?del=' . $result->id . '"><span class="fa fa-trash-o" aria-hidden="true"></span></a>';
+                                <a data-toggle="tooltip" data-placement="bottom" title="Επεξεργασία '.$result->title.'" class="btn btn-sm btn-success" href="edit_questionnaire.php?id='.$result->id.'"><span class="fa fa-pencil" aria-hidden="true"></span></a>';
                             }
+                            echo '<a data-toggle="tooltip" data-placement="bottom" title="Διαγραφή '.$result->title.'" data-id="'.$result->id.'" class="btn btn-sm btn-danger remove-item" href="questionnaires.php?del=' . $result->id . '"><span class="fa fa-trash-o" aria-hidden="true"></span></a>';
                         echo '</td>
                     </tr>';
                 }
@@ -249,7 +249,7 @@ jQuery(document).ready(function () {
         });
     }
 
-    //διαγράφω το ερωτηματολογιο
+    //διαγράφω το ερωτηματολογιο.
     function delete_questionnaire(id){
         jQuery ('#alert').fadeOut();
         var data = new FormData();
