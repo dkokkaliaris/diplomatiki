@@ -249,7 +249,7 @@ jQuery(document).ready(function () {
         });
     }
 
-    //διαγράφω το ερωτηματολογιο.
+    //διαγράφω το ερωτηματολογιο
     function delete_questionnaire(id){
         jQuery ('#alert').fadeOut();
         var data = new FormData();

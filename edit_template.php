@@ -183,20 +183,8 @@ echo '<div id="simpleQuestion" class="modal fade" tabindex="-1" role="dialog" ar
                                             $results = $stmt->fetchAll();
                                             $total = $stmt->rowCount();
 
-                                            /*$params = array(':id' => $id);
-                                            $sql = 'SELECT question_id FROM dk_questionnaire_questions WHERE questionnaire_id = :id';
-                                            $stmt = $dbh->prepare($sql);
-                                            $stmt->execute($params);
-                                            $questionnaireQuestions = $stmt->fetchAll();
-
-                                            $quesArray = [];
-                                            foreach ($questionnaireQuestions as $questionnaireQuestion) {
-                                                $quesArray[] = $questionnaireQuestion->question_id;
-                                            }*/
-
                                             if ($total > 0) {
                                                 foreach ($results as $q) {
-                                                    //if (!in_array($q->id, $quesArray)) {
                                                         echo '
                                                         <tr style="padding: 15px;" class="selection" data-id="'.$q->id.'">
                                                             <td>'.$q->question.'</td>
@@ -221,12 +209,7 @@ echo '<div id="simpleQuestion" class="modal fade" tabindex="-1" role="dialog" ar
                                                         </tr>';
                                                    // }
                                                 }
-                                            } /*else { ?>
-                                                <a class="btn btn-primary btn-sm" href="add_template.php">Δημιουργία
-                                                    Νέου
-                                                    Template</a>
-                                            <?php } */
-
+                                            }
                                         echo '
                                         </tbody>
                                     </table>
@@ -608,8 +591,6 @@ echo '<div class="container-fluid">
             jQuery('#type-q-edit').on('change', function () {
                 jQuery('.hidden_block').hide();
                 var $value = jQuery(this).val();
-
-                //if ($value == 'radio' || $value == 'check'){
                 if ($value == 'text' || $value == 'number'){
                     jQuery('#choices_container-edit').fadeIn();
                     jQuery('#type-multi-q-edit').fadeIn();

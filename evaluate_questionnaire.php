@@ -35,8 +35,13 @@ $stmt = $dbh->prepare($sql);
 $stmt->execute($params);
 $result = $stmt->fetchObject();
 
-if ($_SERVER['REQUEST_METHOD'] == "POST") {
+$params = array(':id' => $result->user_id);//διδάσκων
+$sql = 'SELECT first_name, last_name FROM dk_users WHERE id = :id ';
+$stmt = $dbh->prepare($sql);
+$stmt->execute($params);
+$user = $stmt->fetchObject();
 
+if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $params = array(':id' => $id);
     $sql = "SELECT * FROM dk_questionnaire_questions where questionnaire_id = :id";
     $stmt = $dbh->prepare($sql);
@@ -130,11 +135,18 @@ $breadcrumb=array(
 );
 echo '<div class="container-fluid" xmlns="http://www.w3.org/1999/html">
         '.show_breacrumb($breadcrumb).'
-        <div class="row">
-            <div class="col-sm-12">'.$alert .'
-				<h4>Αξιολόγηση Ερωτηματολογίου '.$result->title.'</h4>
-            </div>
-        </div>
+        <div class="row plaisio">
+			<div align="center">
+				<div class="col-sm-12">'.$alert .'
+					<h4>Αξιολόγηση Ερωτηματολογίου '.$result->title.'</h4>
+				</div>
+				<p>Υπεύθυνος Εκπ. Προγράμματος: '.$user->first_name.' '.$user->last_name.'</p> 
+				<p>Περιγραφή Εκπ. Προγράμματος: '.$result->description.'</p>
+				<p>Ημερομηνία Έναρξης: '.$result->time_begins.'</p>
+				<p>Ημερομηνία Λήξης: '.$result->time_ends.'</p>
+			</div>
+		</div>
+		
         <div class="header-row">
             <div class="container">
                 <div class="row">

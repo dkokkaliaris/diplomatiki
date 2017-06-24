@@ -31,6 +31,12 @@ $stmt = $dbh->prepare($sql);
 $stmt->execute($params);
 $result = $stmt->fetchObject();
 
+$params = array(':id' => $result->user_id);//διδάσκων
+$sql = 'SELECT first_name, last_name FROM dk_users WHERE id = :id ';
+$stmt = $dbh->prepare($sql);
+$stmt->execute($params);
+$user = $stmt->fetchObject();
+
 //Αν μπορω να αξιολογήσω το ερωτηματολογιο...
 if ($_SERVER['REQUEST_METHOD'] == "POST" && $available) {
 
@@ -143,11 +149,18 @@ $breadcrumb=array(
 
 echo '<div class="container-fluid">
     '.show_breacrumb($breadcrumb).'
-        <div class="row">
-            <div class="col-sm-12">'.$alert.'
-                <h4>Ανώνυμη Αξιολόγηση Ερωτηματολογίου '.$result->title.'</h4>
-            </div>
-        </div>
+        <div class="row plaisio">
+			<div align="center">
+				<div class="col-sm-12">'.$alert .'
+					<h4>Αξιολόγηση Ερωτηματολογίου '.$result->title.'</h4>
+				</div>
+				<p>Υπεύθυνος Εκπ. Προγράμματος: '.$user->first_name.' '.$user->last_name.'</p> 
+				<p>Περιγραφή Εκπ. Προγράμματος: '.$result->description.'</p>
+				<p>Ημερομηνία Έναρξης: '.$result->time_begins.'</p>
+				<p>Ημερομηνία Λήξης: '.$result->time_ends.'</p>
+			</div>
+		</div>
+		
         <div class="header-row">
             <div class="container">
                 <div class="row">
@@ -180,7 +193,6 @@ echo '<div class="container-fluid">
                         $stmt = $dbh->prepare($sql);
                         $stmt->execute($params);
                         $questionOptions = $stmt->fetchAll();
-
 
                         echo '<div class="table-row">
                             <div class="row">

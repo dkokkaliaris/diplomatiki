@@ -373,8 +373,6 @@ echo '<div class="container-fluid">
             // ================================== ΣΕΛΙΔΟΠΟΙΗΣΗ ============================================
            pagination($total_pages, $_GET, $targetpage);
             // ================================== ΣΕΛΙΔΟΠΟΙΗΣΗ ============================================
-
-
         echo'</div>
     </div>
 </div>';
@@ -449,7 +447,6 @@ jQuery(document).ready(function () {
             jQuery('.hidden_block').hide();
             var $value = jQuery(this).val();
 
-            //if ($value == 'radio' || $value == 'check'){
             if ($value == 'text' || $value == 'number'){
                 jQuery('#choices_container-edit').fadeIn();
                 jQuery('#type-multi-q-edit').fadeIn();
@@ -549,7 +546,6 @@ jQuery(document).ready(function () {
                     data: data,
                     success: function (data, textStatus, XMLHttpRequest) {
                         console.log(data);
-
 
                         var options = "";
                         for (var i = 0; i < data['options'].length; i++) {

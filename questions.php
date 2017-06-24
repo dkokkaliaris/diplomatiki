@@ -33,7 +33,7 @@ echo '<div class="container-fluid">
         <table class="table table-striped">
             <thead>
                 <tr>
-                  <th>#</th>
+                  <th>ID</th>
                   <th>Σύντομος Τίτλος</th>
                   <th>Ηημερομηνία Έναρξης</th>
                   <th>Ηημερομηνία Λήξης</th>

@@ -150,7 +150,6 @@ echo '<div class="container-fluid">
         <div class="row">
             <div class="col-sm-12">';
 
-
         // http://aspektas.com/blog/really-simple-php-pagination/
         // ================================== ΣΕΛΙΔΟΠΟΙΗΣΗ ============================================
         pagination($total_pages, $_GET, $targetpage);

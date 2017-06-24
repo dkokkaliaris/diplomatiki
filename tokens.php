@@ -40,10 +40,10 @@ if (!empty($title)) {
 // φέρνω όλα τα tokens ερωτηματολογίων
 if ($_SESSION['level'] == 3){
 $params = array(':id' => $_SESSION['userid']);
-    $sql = "SELECT title,questionnaire_id FROM dk_questionnaire join dk_tokens on dk_questionnaire.id = dk_tokens.questionnaire_id where dk_tokens.user_id = :id $addtosql group by dk_tokens.questionnaire_id,title";
+$sql = "SELECT * FROM dk_questionnaire join dk_tokens on dk_questionnaire.id = dk_tokens.questionnaire_id where dk_tokens.user_id = :id $addtosql group by dk_tokens.questionnaire_id;";
 }else{
     $params = array();
-    $sql = "SELECT title,questionnaire_id FROM dk_questionnaire join dk_tokens on dk_questionnaire.id = dk_tokens.questionnaire_id where 1 $addtosql group by dk_tokens.questionnaire_id,title";
+    $sql = "SELECT * FROM dk_questionnaire join dk_tokens on dk_questionnaire.id = dk_tokens.questionnaire_id where 1 $addtosql group by dk_tokens.questionnaire_id;";
 }
 $stmt = $dbh->prepare($sql);
 $stmt->execute($params);

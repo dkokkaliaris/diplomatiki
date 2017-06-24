@@ -91,7 +91,7 @@ echo '<div class="container-fluid">
                             <table class="table table-sm">
                                 <thead>
                                 <tr>
-                                    <th>#</th>
+                                    <th>ID</th>
                                     <th>Απάντηση</th>
                                 </tr>
                                 </thead>';

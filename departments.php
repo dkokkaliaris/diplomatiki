@@ -11,7 +11,7 @@ if (!is_logged_in()) {
 }
 
 $alert = '';
-if (isset($_GET['del']) && sanitize($_GET['del'])>0) {
+if ($_GET['del'] && sanitize($_GET['del'])>0) {
     $del = sanitize($_GET['del']);
     $params = array(':id' => $del);
     $sql = 'DELETE FROM dk_departments WHERE id = :id';
@@ -20,7 +20,7 @@ if (isset($_GET['del']) && sanitize($_GET['del'])>0) {
     $alert .= "<div class='alert alert-success'>Η διαγραφή του τμήματος πραγματοποιήθηκε με επιτυχία.</div>";
 }
 
-if (isset($_GET['a']) && sanitize($_GET['a'])>0) {
+if ($_GET['a'] && sanitize($_GET['a'])>0) {
     $alert .= "<div class='alert alert-success'>Η αλλαγή των στοιχείων του τμήματος πραγματοποιήθηκε με επιτυχία.</div>";
 }
 
@@ -140,7 +140,7 @@ echo '<div class="container-fluid">
                               <td>' . $user->id . '</td>
                               <td id="nameDepartment-' . $user->id . '">' . $user->name . '</td>
                               <td><button class="btn btn-sm btn-success edit_q" data-id="' . $user->id . '">
-                                <span class="fa fa-pencil" aria-hidden="true"></span></button> <a onclick=\'return confirm("Είστε σιγουρος ότι θέλετε να διαγράψετε το τμήμα;")\' class="btn btn-sm btn-danger" href="departments.php?del=' . $user->id . '"><span class="fa fa-trash-o" aria-hidden="true"></span></a></td>
+                                <span class="fa fa-pencil" aria-hidden="true"></span></button> <a onclick=\'return confirm("Θέλετε να διαγράψετε το τμήμα;")\' class="btn btn-sm btn-danger" href="departments.php?del=' . $user->id . '"><span class="fa fa-trash-o" aria-hidden="true"></span></a></td>
                           </tr>';
                     }
 
@@ -195,7 +195,7 @@ echo '<div class="container-fluid">
                         success: function (data, textStatus, XMLHttpRequest) {
                             console.log(data);
 
-                            $('.table').append('<tr><td>' + data['id'] + '</td><td>' + data['name'] + '</td><td><a class="btn btn-sm btn-success" href="departments.php?id=' + data['id'] + '"><span class="fa fa-pencil" aria-hidden="true"></span></a> <a onclick=\'return confirm("Είστε σίγουρος ότι θέλετε να διαγράψετε το τμήμα;")\' class="btn btn-sm btn-danger" href="departments.php?del=' + data['id'] + '"><span class="fa fa-trash-o" aria-hidden="true"></span></a></td></tr>');
+                            $('.table').append('<tr><td>' + data['id'] + '</td><td>' + data['name'] + '</td><td><a class="btn btn-sm btn-success" href="departments.php?id=' + data['id'] + '"><span class="fa fa-pencil" aria-hidden="true"></span></a> <a onclick=\'return confirm("Διαγραφή")\' class="btn btn-sm btn-danger" href="departments.php?del=' + data['id'] + '"><span class="fa fa-trash-o" aria-hidden="true"></span></a></td></tr>');
 
                             jQuery('#newDepartment .close').click();
                         }, error: function (jqXHR, textStatus, errorThrown) {
