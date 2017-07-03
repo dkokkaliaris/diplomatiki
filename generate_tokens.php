@@ -80,8 +80,15 @@ echo '
                             <label for="questionnaire" class="form-control-label">Ερωτηματολόγιο: </label>
                             <select name="questionnaire" id="questionnaire" class="form-control type" required="">
                                 <option value="">Επιλογή Ερωτηματολογίου</option>';
-                                $stmt = $dbh->prepare('SELECT * FROM dk_questionnaire where template = 0 and user_id = :id;');
-                                $params = array(':id' => $_SESSION['userid']);
+
+                                if($_SESSION['level'] == 1 || $_SESSION['level'] == 2){
+                                    $stmt = $dbh->prepare('SELECT * FROM dk_questionnaire where template = 0');
+                                    $params = array();
+                                }else {
+                                    $stmt = $dbh->prepare('SELECT * FROM dk_questionnaire where template = 0 and user_id = :id;');
+                                    $params = array(':id' => $_SESSION['userid']);
+                                }
+
                                 $stmt->execute($params);
 
                                 $results = $stmt->fetchALL();

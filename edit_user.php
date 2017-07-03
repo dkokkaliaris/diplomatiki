@@ -20,9 +20,11 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     $aem = sanitize($_POST['aem']);
     $email = sanitize($_POST['email']);
     $telephone = sanitize($_POST['telephone']);
+    $user_type = sanitize($_POST['user_type']);
 
-    $stmt = $dbh->prepare('UPDATE dk_users SET type = :type, first_name = :first_name, last_name = :last_name, username = :username, aem = :aem, email = :email, telephone = :telephone where id = :id');
-    $params = array(':type' => $type, ':first_name' => $first_name, ':last_name' => $last_name, ':username' => $username, ':aem' => $aem, ':email' => $email, ':telephone' => $telephone, ':id' => $id);
+    $params = array(':type' => $type, ':first_name' => $first_name, ':last_name' => $last_name, ':username' => $username, ':aem' => $aem, ':email' => $email, ':telephone' => $telephone, ':user_type' => $user_type, ':id' => $id);
+    $stmt = $dbh->prepare('UPDATE dk_users SET type = :type, first_name = :first_name, last_name = :last_name, username = :username, aem = :aem, email = :email, telephone = :telephone, user_type = :user_type where id = :id');
+
     $stmt->execute($params);
 
     header("Location: users.php?a=1");

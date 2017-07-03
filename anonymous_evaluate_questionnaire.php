@@ -154,13 +154,13 @@ echo '<div class="container-fluid">
 				<div class="col-sm-12">'.$alert .'
 					<h4>Αξιολόγηση Ερωτηματολογίου '.$result->title.'</h4>
 				</div>
-				<p>Υπεύθυνος Εκπ. Προγράμματος: '.$user->first_name.' '.$user->last_name.'</p> 
+				<p>Υπεύθυνος Εκπ. Προγράμματος: '.$user->first_name.' '.$user->last_name.'</p>
 				<p>Περιγραφή Εκπ. Προγράμματος: '.$result->description.'</p>
 				<p>Ημερομηνία Έναρξης: '.$result->time_begins.'</p>
 				<p>Ημερομηνία Λήξης: '.$result->time_ends.'</p>
 			</div>
 		</div>
-		
+
         <div class="header-row">
             <div class="container">
                 <div class="row">

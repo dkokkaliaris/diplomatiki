@@ -20,6 +20,10 @@ $params = array(':id' => $id);
 $stmt->execute($params);
 $questionnaire = $stmt->fetchObject();
 
+// Αν ειναι καθηγητής και το ερωτηματολογιο ειναι κλειδωμένο, να μην βλέπει αποτελέσματα
+if ($_SESSION['level']==3 && $questionnaire->lockedtime && strtotime($questionnaire->lockedtime)>time()) {
+    exit;
+}
 $breadcrumb=array(
     array('title'=>'Αποτελέσματα Αξιολογήσεων','href'=>'results.php'),
     array('title'=>'Αποτελέσματα Ερωτηματολογίων','href'=>''),
@@ -63,7 +67,6 @@ echo '<div class="container-fluid">
                             $final_sum++;
                             $final_labels[] = $question->question;
                         }
-
                         switch($question->type):
                             case 'radio':
                                 $type = ($question->multi_type=='number'?'Ερώτηση Πολλαπλής Επιλογής Αριθμού (Radio)': 'Πολλαπλής κειμένου (Radio)');
@@ -90,6 +93,7 @@ echo '<div class="container-fluid">
                         $labels_pie = array();
                         $sum_answer = 0;//υπολογίζουμε συνολο για μεσο ορο
                         foreach ($answers as $answer) { //για κάθε απαντηση
+                        $mo=null;
                             if($answer->type == 'radio'||$answer->type == 'check'){ //αν είναι radio / check
                                 if(empty($data[$answer->answer] ))$data[$answer->answer]=0; //αν δεν υπάρχει τιμή στο πινακας[απαντηση] κάνε 0
                                 $data[$answer->answer] ++;
@@ -99,7 +103,7 @@ echo '<div class="container-fluid">
                             }
                         }
 
-                        if($question->multi_type == 'number'){
+                        if(($answer->type == 'radio' || $answer->type == 'check') && $question->multi_type == 'number'){
                             $mo = $data_mo/$sum_answer;
                             $stmt = $dbh->prepare("SELECT MAX(CONVERT(pick, UNSIGNED INTEGER)) AS max FROM dk_question_options where question_id = :id ;");
                             $params = array(':id' => $question->id);
@@ -113,7 +117,7 @@ echo '<div class="container-fluid">
                             $data_pie[] = $d;
                         }
 
-                        echo '<strong>'.$x.'. '.$question->question.'</strong>'.(!empty($mo)?' <br />Μέσος Όρος Ερώτησης: <strong>'.round($mo,2).'</strong> / '.$max->max.'':'');
+                        echo '<strong>'.$x.'. '.$question->question.'</strong>'.(!empty($mo) ? ' <br />Μέσος Όρος Ερώτησης: <strong>'.round($mo,2).'</strong> / '.$max->max.'':'');
                         echo '<br />'.$type;
                         if(sizeof($data_pie)>0){
                             echo '<div class="graph-td">

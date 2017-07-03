@@ -300,7 +300,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $id = $form['id'];//id question
         $question = sanitize($form['question_desc']); //perigrafh neas erwthshs
         $type = sanitize($_POST['type']);
-        $questionnaire_id = sanitize($_POST['questionnaire_id']);
+        $questionnaire_id = isset($_POST['questionnaire_id'])?sanitize($_POST['questionnaire_id']):'';
         $multitype = sanitize($_POST['multi_type']);//typos erwthshs
         if($type == 'number' || $type == 'text'){ // αν έχουμε πολλαπλής με αριθμό η κείμενο κανουμε ανταλλαγή δεδομένων γιατι η βάση αναγνωρίζρι στη θέση τύπου μόνο radio check που είναι πλεον οι τιμές του type-multi
             $t = $type;
@@ -366,7 +366,7 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         //αφου εσπασα το string βαζω καθε τιμή του σε μια αλλη μεταβλητη και το φιλτράρω.
         $question = sanitize($form['question_desc']); //perigrafh neas erwthshs
         $type = sanitize($_POST['type']);//typos erwthshs
-        $questionnaire_id = sanitize($_POST['questionnaire_id']);//id questionnaire
+        $questionnaire_id = isset($_POST['questionnaire_id'])?sanitize($_POST['questionnaire_id']):'';//id questionnaire
         $isTemplate = sanitize($_POST['isTemplate']);
         $multitype = sanitize($_POST['type-multi']);//typos erwthshs
         if($type == 'number' || $type == 'text'){ // αν έχουμε πολλαπλής με αριθμό η κείμενο κανουμε ανταλλαγή δεδομένων γιατι η βάση αναγνωρίζρι στη θέση τύπου μόνο radio check που είναι πλεον οι τιμές του type-multi
@@ -459,6 +459,24 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     //διαγραφει όλες τις απαντησεις ενος ερωτηματολογιου οταν θελω να το σβησω το ερωτηματολογιο.
     }elseif($_POST['mode'] == 'delete_all_answers'){
         $id = sanitize($_POST['id']);
+
+        $params = array(':id' => $id);
+        $sql = 'SELECT id FROM dk_questionnaire_questions WHERE questionnaire_id = :id';
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute($params);
+        $question = $stmt->fetchAll();
+
+        if(sizeof($question)>0){
+            foreach ($question as $q){
+                $params = array(':id' => $q->id);
+                $sql = 'DELETE FROM dk_arduino WHERE question_id = :id';
+                $stmt = $dbh->prepare($sql);
+                $stmt->execute($params);
+
+            }
+
+        }
+
         $params = array(':id' => $id);
         $sql = "DELETE FROM dk_answers WHERE  questionnaire_id = :id ;";
         $stmt = $dbh->prepare($sql);
@@ -488,6 +506,22 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
     }elseif($_POST['mode'] == 'delete_questionnaire'){
         $id = sanitize($_POST['id']);
 
+        $params = array(':id' => $id);
+        $sql = 'SELECT id FROM dk_questionnaire_questions WHERE questionnaire_id = :id';
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute($params);
+        $question = $stmt->fetchAll();
+
+        if(sizeof($question)>0){
+            foreach ($question as $q){
+                $params = array(':id' => $q->id);
+                $sql = 'DELETE FROM dk_arduino WHERE question_id = :id';
+                $stmt = $dbh->prepare($sql);
+                $stmt->execute($params);
+
+            }
+
+        }
         $params = array(':id' => $id);
         $sql = 'DELETE FROM dk_questionnaire_questions WHERE questionnaire_id = :id';
         $stmt = $dbh->prepare($sql);
@@ -634,6 +668,103 @@ if ($_SERVER['REQUEST_METHOD'] == "POST") {
         $stmt->execute($params);
         $arr['id'] = $id;
         $arr['name'] = $name;
+    // οταν επιλεξω ενα ερωτηματολογιο απο το modal να μου φερει τις αντιστοιχες ερωτησεις του που ειναι πολλαπλής αριθμητικές.
+    }elseif($_POST['mode'] == 'get_arduino_questions'){
+        $id = sanitize($_POST['id']);
+        $params = array(':id' => $id);
+        $sql = 'SELECT B.id AS id, B.question AS question FROM dk_questionnaire_questions AS A JOIN dk_question AS B ON A.question_id=B.id WHERE A.questionnaire_id = :id AND (B.type = "check" OR B.type = "radio") ';
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute($params);
+        $results = $stmt->fetchALL();
+        $arr['questions'] = $results;
+
+    //modal προσθηκης νεας συσκευης arduino (παρομοιο με την επεξεργασια συσκευης)
+    }elseif($_POST['mode'] == 'add_arduino'){
+        //insert arduino
+        $questionnaire_id = sanitize($_POST['questionnaire']);
+        $question_id = sanitize($_POST['question']);
+        $arduino_id = sanitize($_POST['arduino_id']);
+
+        //get question to dk_questionnaire_questions
+        $params = array(':questionnaire_id' => $questionnaire_id, ':question_id' => $question_id);
+        $sql = 'SELECT id FROM dk_questionnaire_questions WHERE questionnaire_id = :questionnaire_id AND question_id = :question_id';
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute($params);
+        $id = $stmt->fetchObject();
+
+        $params = array(':arduino_id' => $arduino_id, ':id' => $id->id, ':date' => date('Y-m-d H:i:s'));
+        $sql = 'INSERT INTO dk_arduino (arduino_id, question_id, ip, last_active) VALUES (:arduino_id, :id, "", :date)';
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute($params);
+        $new_id = $dbh->lastInsertId();
+
+        $params = array(':question_id' => $question_id);
+        $sql = 'SELECT question FROM dk_question WHERE id = :question_id';
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute($params);
+        $question = $stmt->fetchObject();
+
+        $params = array(':questionnaire_id' => $questionnaire_id);
+        $sql = 'SELECT title FROM dk_questionnaire WHERE id = :questionnaire_id';
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute($params);
+        $questionnaire = $stmt->fetchObject();
+
+        $arr['id'] = $new_id;
+        $arr['arduino'] = $arduino_id;
+        $arr['question'] = $question->question;
+        $arr['questionnaire_title'] = $questionnaire->title;
+
+    }elseif($_POST['mode'] == 'get_arduino'){
+        $id = sanitize($_POST['id']);
+        $params = array(':id' => $id);
+        $sql = 'SELECT A.id, A.arduino_id, B.questionnaire_id, B.question_id AS question FROM dk_arduino AS A JOIN dk_questionnaire_questions AS B ON A.question_id = B.id WHERE A.id = :id';
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute($params);
+        $results = $stmt->fetchObject();
+        $arr['id'] = $results->id;
+        $arr['arduino_id'] = $results->arduino_id;
+        $arr['questionnaire'] = $results->questionnaire_id;
+        $arr['question'] = $results->question;
+    //modal επεξεργασίας arduino
+    }elseif($_POST['mode'] == 'edit_arduino'){
+        $questionnaire_id = sanitize($_POST['questionnaire']);
+        $question_id = sanitize($_POST['question']);
+        $arduino_id = sanitize($_POST['arduino_id']);
+        $id = sanitize($_POST['id']);
+
+        //παιρνω το id από τον κοινοπ πινακα  των ερωτησεων και ερωτηματολογιων.
+        $params = array(':questionnaire_id' => $questionnaire_id, ':question_id' => $question_id);
+        $sql = 'SELECT id FROM dk_questionnaire_questions WHERE questionnaire_id = :questionnaire_id AND question_id = :question_id';
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute($params);
+        $q_id = $stmt->fetchObject();
+
+        //κανω ενημερωση τον πινακα του arduino με το id το κοινο.
+        $params = array(':arduino_id' => $arduino_id, ':question_id' => $q_id->id, ':id' => $id);
+        $sql = 'UPDATE dk_arduino SET arduino_id = :arduino_id, question_id = :question_id  where id = :id ;';
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute($params);
+
+        //παιρνει απο το κοινο id παιρνει την ερωτηση
+        $params = array(':question_id' => $question_id);
+        $sql = 'SELECT question FROM dk_question WHERE id = :question_id';
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute($params);
+        $question = $stmt->fetchObject();
+
+        //Παιρνει και το ερωτηματολογιο.
+        $params = array(':questionnaire_id' => $questionnaire_id);
+        $sql = 'SELECT title FROM dk_questionnaire WHERE id = :questionnaire_id';
+        $stmt = $dbh->prepare($sql);
+        $stmt->execute($params);
+        $questionnaire = $stmt->fetchObject();
+
+        $arr['id'] = $id;
+        $arr['arduino'] = $arduino_id;
+        $arr['question'] = $question->question;
+        $arr['questionnaire_title'] = $questionnaire->title;
+
     }
     //η ιδια εντολη με το str που κανει τον πινακα json sting (αυτο μονο απο ajax στο αρχειο πισω)
     echo json_encode($arr);

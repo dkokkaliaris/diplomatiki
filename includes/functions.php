@@ -71,8 +71,24 @@ function is_logged_in(){
     }
 }
 
-function is_set($value){
-    return isset($_SESSION[$value])? $value : '';
+function is_set($value1, $value2 = null, $value3 = null){
+    $return = '';
+    if(isset($_SESSION[$value1])){
+        if(is_array($_SESSION[$value1])){
+            if(isset($_SESSION[$value1][$value2])){
+                if(is_array($_SESSION[$value1][$value2])){
+                    if(isset($_SESSION[$value1][$value2][$value3])){
+                        $return = $_SESSION[$value1][$value2][$value3];
+                    }
+                }else{
+                    $return = $_SESSION[$value1][$value2];
+                }
+            }
+        }else{
+            $return = $_SESSION[$value1];
+        }
+    }
+    return $return;
 }
 
 //για την εμφάνιση των προηγούμενων σελίδων στην γραμμή των σελίδων

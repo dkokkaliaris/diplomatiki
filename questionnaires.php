@@ -202,6 +202,9 @@ echo '<div class="container-fluid">
                                 <a data-toggle="tooltip" data-placement="bottom" title="Προβολή '.$result->title.'" class="btn btn-sm btn-warning" target="_blank" href="questionnaire_pdf.php?id='.$result->id.'"><i class="fa fa-file-pdf-o" aria-hidden="true"></i></a>
                                 <a data-toggle="tooltip" data-placement="bottom" title="Επεξεργασία '.$result->title.'" class="btn btn-sm btn-success" href="edit_questionnaire.php?id='.$result->id.'"><span class="fa fa-pencil" aria-hidden="true"></span></a>';
                             }
+                            if($flag_btns && $_SESSION['level']==2){// αν είναι ΟΜΕΑ να απαντήσει μαζικά τις ερωτήσεις
+                                 echo '<a data-toggle="tooltip" data-placement="bottom" title="Μαζική Απάντηση '.$result->title.'" class="btn btn-sm btn-info" target="_blank" href="evaluate_questionnaire.php?id='.$result->id.'&action=all"><i class="fa fa-th-list" aria-hidden="true"></i></a>';
+                            }
                             echo '<a data-toggle="tooltip" data-placement="bottom" title="Διαγραφή '.$result->title.'" data-id="'.$result->id.'" class="btn btn-sm btn-danger remove-item" href="questionnaires.php?del=' . $result->id . '"><span class="fa fa-trash-o" aria-hidden="true"></span></a>';
                         echo '</td>
                     </tr>';

@@ -50,9 +50,10 @@ $sql = 'SELECT name FROM dk_departments WHERE id = :id ';
 $stmt = $dbh->prepare($sql);
 $stmt->execute($params);
 $department = $stmt->fetchObject();
-$pdf->Cell(0, 5, 'Τμήμα: '.$department->name , 0, 1, 'C');
-$pdf->Ln(2);
-
+if(!empty($department->name)){
+    $pdf->Cell(0, 5, 'Τμήμα: '.$department->name, 0, 1, 'C');
+    $pdf->Ln(2);
+}
 $pdf->Cell(0, 5, 'Ημερομηνία Εκτύπωσης: '.date("m/Y") , 0, 1, 'C');//ημερομηνία
 $pdf->Ln(10);
 
@@ -68,7 +69,8 @@ $total_questions = $stmt->rowCount();
 
 $pos_i = 0;
 foreach ($result_questions as $q) {$pos_i++;
-    $pdf->Cell('', 5, $pos_i.'. '.$q->question);
+    $pdf->Write(0, $pos_i.'. '.$q->question, '', 0, 'L', true, 0, false, false, 0);
+   //$pdf->Cell('', 5, $pos_i.'. '.$q->question);
     $pdf->Ln(6);
     if( $q->type=='radio' || $q->type=='check' ){
         $params = array(':id' => $q->id);
@@ -88,6 +90,6 @@ foreach ($result_questions as $q) {$pos_i++;
         $pdf->TextField('id_'.$q->id, '', '', array('multiline'=>true,'readonly' => 'true'), array());
         $pdf->Ln(10);
     }
-    $pdf->Ln(10);
+    $pdf->Ln(15);
 }
 $pdf->Output('Questionnaire.pdf', 'I'); //Κώδικας από TCPDF

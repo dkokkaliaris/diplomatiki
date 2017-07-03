@@ -37,4 +37,9 @@
 			<a class="nav-link" href="'.BASE_URL.'users.php">Διαχείριση Χρηστών</a>
 		</li>';
 	}
+    if ($_SESSION['level'] > 0 && $_SESSION['level'] < 4) {
+    echo '<li class="nav-item'.(in_array('arduino', $page) ?' active':'').'">
+			<a class="nav-link" href="'.BASE_URL.'arduino_list.php">Arduino</a>
+		</li>';
+    }
 ?>

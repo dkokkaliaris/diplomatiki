@@ -59,7 +59,7 @@ if($_SESSION['level'] == 1 || $_SESSION['level'] == 2){
 }else{
 // φέρνω όλα τα ερωτηματολόγια που έχουν απαντηθεί και δεν είναι κλειδωμένα
     $params = array(':id' => $_SESSION['userid']);
-    $sql = "SELECT A.*, D.type, B.last_name, B.first_name, C.title AS lesson_title FROM dk_questionnaire A join dk_answers AS D on A.id = D.questionnaire_id JOIN dk_users B ON A.user_id=B.id JOIN dk_lessons C ON A.lesson_id=C.id where template = 0 and A.user_id = :id and (A.lockedtime is null or A.lockedtime < NOW()) $addtosql group by A.id $sortby $sorthow  LIMIT $start,$limit;";
+    $sql = "SELECT A.*, D.type, B.last_name, B.first_name, C.title AS lesson_title FROM dk_questionnaire A join dk_answers AS D on A.id = D.questionnaire_id JOIN dk_users B ON A.user_id=B.id JOIN dk_lessons C ON A.lesson_id=C.id where template = 0 and A.user_id = :id $addtosql group by A.id $sortby $sorthow  LIMIT $start,$limit;";
 }
 $stmt = $dbh->prepare($sql);
 $stmt->execute($params);
@@ -129,9 +129,11 @@ echo '<div class="container-fluid">
                             $count = $stmt->rowCount();
                             echo $count;
                         echo '</td>
-                        <td>
-                            <a data-toggle="tooltip" data-placement="bottom" title="Προβολή Αποτελεσμάτων" href="questionnaire_graphs.php?id='.$result->id.'" class="btn btn-warning"><span class="fa fa-area-chart" aria-hidden="true"></span></a>
-                        </td>
+                        <td>';
+                            if(($_SESSION['level']==3 &&$_SESSION['userid']==$result->user_id && $result->lockedtime<date('Y-m-d H:i:s'))||$_SESSION['level']==1 || $_SESSION['level']==2){//αν ειναι ο καθηγητης του ερωτηματολογίου και έχει περάσει η ημερομηνία κλειδώματος ή αν είναι Διαχειριστής ή αν είναι ΟΜΕΑ θα εμφανιστεί το κουμπί εμφανισης αποτελεσμάτων
+                                echo '<a data-toggle="tooltip" data-placement="bottom" title="Προβολή Αποτελεσμάτων" href="questionnaire_graphs.php?id='.$result->id.'" class="btn btn-warning"><span class="fa fa-area-chart" aria-hidden="true"></span></a>';
+                            }
+                        echo '</td>
                     </tr>';
                 }
 

@@ -310,9 +310,16 @@ echo '<div id="simpleQuestion" class="modal fade" tabindex="-1" role="dialog" ar
                                         </thead>
                                         <tbody class="template_layout">';
                                         // Φέρουμε την λίστα με τα πρότυπα ερωτηματολόγια
-                                        $params = array(':id' => $_SESSION['userid']);
-                                        $sql = 'SELECT * FROM dk_questionnaire where template = 1 and user_id = :id';
-                                        $stmt = $dbh->prepare($sql);
+                                        if($_SESSION['level'] == 1 || $_SESSION['level'] == 2){
+                                            $params = array();
+                                            $sql = 'SELECT * FROM dk_questionnaire where template = 1';
+                                            $stmt = $dbh->prepare($sql);
+                                        }else {
+                                            $params = array(':id' => $_SESSION['userid']);
+                                            $sql = 'SELECT * FROM dk_questionnaire where template = 1 and user_id = :id';
+                                            $stmt = $dbh->prepare($sql);
+                                        }
+
                                         $stmt->execute($params);
                                         $results = $stmt->fetchAll();
                                         $total = $stmt->rowCount();

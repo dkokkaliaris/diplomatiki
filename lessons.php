@@ -8,6 +8,7 @@ $alert = '';
 // σε περίπτωση που θέλω να διαγράψω ένα μάθημα, παίρνω από το URL
 // το action και το ID του και τρέχω το query.
 if (isset($_GET['action']) && sanitize($_GET['action']) == "delete") {
+    $id = sanitize($_GET['id']);
     $continue = false;
     if($_SESSION['level']!=1){// αν δεν είναι διαχειριστής ελέγχω να δω αν έχει πρόσβαση στο ερωτηματολόγιο
         $params = array(':id' => $id, ':u_id'=>$_SESSION['userid']);
@@ -20,7 +21,6 @@ if (isset($_GET['action']) && sanitize($_GET['action']) == "delete") {
         }
     }else $continue = true;
     if($continue){
-        $id = sanitize($_GET['id']);
         $params = array(':id' => $id);
         $sql = 'DELETE FROM dk_lessons WHERE id = :id';
         $stmt = $dbh->prepare($sql);

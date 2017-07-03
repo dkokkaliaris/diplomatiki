@@ -260,8 +260,6 @@ echo '<div class="container-fluid">
                                 <th><a href="template_questions.php?sortby=question&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Ερώτηση</a></th>
                                 <th><a href="template_questions.php?sortby=type&amp;sorthow='.($sorthow == "desc"?"asc":"desc").'">Τύπος Ερώτησης</a></th>
                                 <th>Επιλογές</th>
-                                <th>Πρότυπο Ερωτηματολόγιο</th>
-                                <th>Ερωτηματολόγιο</th>
                                 <th>Ενέργειες</th>
                             </tr>
                             <tr>
@@ -276,8 +274,6 @@ echo '<div class="container-fluid">
                                         <option '.($type=='file'?'selected':'').' value="file">Ερώτηση Προσθήκης Αρχείου</option>
                                     </select>
                                 </td>
-                                <td></td>
-                                <td></td>
                                 <td></td>
                                 <td>
                                     <button type="submit" class="btn btn-sm btn-primary">Αναζήτηση</button>
@@ -304,49 +300,6 @@ echo '<div class="container-fluid">
                                             echo ", ";
                                         }
                                         $i++;
-                                    }
-                                echo'</td>
-                                <td>';
-
-                                    $params = array(':id' => $q->id);
-                                    $sql = "SELECT * FROM dk_questionnaire_questions where question_id = :id;";
-                                    $stmt = $dbh->prepare($sql);
-                                    $stmt->execute($params);
-                                    $templatesContainQuestion = $stmt->fetchALL();
-
-                                    $i = 0;
-                                    foreach ($templatesContainQuestion as $rr) {
-
-                                        $params = array(':id' => $rr->questionnaire_id);
-                                        $sql = "SELECT * FROM dk_questionnaire where id = :id;";
-                                        $stmt = $dbh->prepare($sql);
-                                        $stmt->execute($params);
-                                        $stmt->execute();
-                                        $template = $stmt->fetchObject();
-                                        if ($template->template == 1) {
-                                            echo '<a href="edit_template.php?id='.$rr->questionnaire_id.'">'.$rr->questionnaire_id.'></a>';
-                                        }
-                                    }
-                                echo'</td>
-                                <td>';
-
-                                    $params = array(':id' => $q->id);
-                                    $sql = "SELECT * FROM dk_questionnaire_questions where question_id = :id;";
-                                    $stmt = $dbh->prepare($sql);
-                                    $stmt->execute($params);
-                                    $templatesContainQuestion = $stmt->fetchALL();
-
-                                    $i = 0;
-                                    foreach ($templatesContainQuestion as $rr) {
-
-                                        $params = array(':id' => $rr->questionnaire_id);
-                                        $sql = "SELECT * FROM dk_questionnaire where id = :id;";
-                                        $stmt = $dbh->prepare($sql);
-                                        $stmt->execute($params);
-                                        $template = $stmt->fetchObject();
-                                        if ($template->template == 0) {
-                                            echo '<a href="edit_template.php?id='.$rr->questionnaire_id.'">'.$rr->questionnaire_id.'></a>';
-                                        }
                                     }
                                 echo'</td>
                                 <td>
@@ -413,8 +366,6 @@ jQuery(document).ready(function () {
                             '<td>' + data['question'][0]['question'] + '</td>' +
                             '<td>' + data['question'][0]['type'] + '</td>' +
                             '<td>' + options + '</td>' +
-                            '<td></td>' +
-                            '<td></td>' +
                             '<td>' +
                             '<button data-toggle="tooltip" data-placement="bottom" title="Αντιγραφή '+ data['question'][0]['question'] +'" type="button" class="btn btn-sm btn-info dublicate" value="' + data['question'][0]['id'] + '"><i class="fa fa-clone" aria-hidden="true"></i></button>'+
                             '<div data-id="' + data['question'][0]['id'] + '" class="btn btn-success edit_q btn-sm" data-toggle="tooltip" data-placement="bottom" title="Επεξεργασία '+ data['question'][0]['question'] +'"><span class="fa fa-pencil" aria-hidden="true"></span></div> ' +
@@ -567,8 +518,6 @@ jQuery(document).ready(function () {
                             '<td>' + data['question'][0]['question'] + '</td>' +
                             '<td>' + data['question'][0]['type'] + '</td>' +
                             '<td>' + options + '</td>' +
-                            '<td></td>' +
-                            '<td></td>' +
                             '<td>' +
                             '<button data-toggle="tooltip" data-placement="bottom" title="Αντιγραφή '+ data['question'][0]['question'] +'" type="button" class="btn btn-sm btn-info dublicate" value="' + data['question'][0]['id'] + '"><i class="fa fa-clone" aria-hidden="true"></i></button>'+
                             '<div data-id="' + data['question'][0]['id'] + '" class="btn btn-success edit_q btn-sm" data-toggle="tooltip" data-placement="bottom" title="Επεξεργασία '+ data['question'][0]['question'] +'"><span class="fa fa-pencil" aria-hidden="true"></span></div> ' +
@@ -622,8 +571,6 @@ jQuery(document).ready(function () {
                             '<td>' + data['question'] + '</td>' +
                             '<td>' + data['type'] + '</td>' +
                             '<td>' + options + '</td>' +
-                            '<td></td>' +
-                            '<td></td>' +
                             '<td>' +
                             '<button data-toggle="tooltip" data-placement="bottom" title="Αντιγραφή '+ data['question'][0]['question'] +'" type="button" class="btn btn-sm btn-info dublicate" value="' + data['question'][0]['id'] + '"><i class="fa fa-clone" aria-hidden="true"></i></button>'+
                             '<div data-id="' + data['question'][0]['id'] + '" class="btn btn-success edit_q btn-sm" data-toggle="tooltip" data-placement="bottom" title="Επεξεργασία '+ data['question'][0]['question'] +'"><span class="fa fa-pencil" aria-hidden="true"></span></div> ' +

@@ -120,7 +120,7 @@
 				<select name="user_type" id="user_type" class="form-control" required="" >
                     <option value="">Επιλογή Κατηγορίας</option>
 					<option value="icte" '.(isset($_POST['user_type']) && $_POST['user_type']=="icte"?'selected':'').'>Χρήστης με κωδικούς του arch.icte.uowm.gr</option>
-					<option value="sso" '.(isset($_POST['user_type']) && $_POST['user_type']=="icte"?'selected':'').'>Χρήστης με ιδρυματικούς κωδικούς</option>
+					<option value="sso" '.(isset($_POST['user_type']) && $_POST['user_type']=="sso"?'selected':'').'>Χρήστης με ιδρυματικούς κωδικούς</option>
 				</select>
 				<br />
 
